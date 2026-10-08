@@ -52,3 +52,30 @@ def test_contract_lists_all_v1_endpoints() -> None:
 def test_contract_defines_core_schemas() -> None:
     spec = _spec()
     assert EXPECTED_SCHEMAS <= set(spec["components"]["schemas"])
+
+
+def _collect_refs(node, acc=None):
+    if acc is None:
+        acc = set()
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if key == "$ref" and isinstance(value, str):
+                acc.add(value)
+            else:
+                _collect_refs(value, acc)
+    elif isinstance(node, list):
+        for item in node:
+            _collect_refs(item, acc)
+    return acc
+
+
+def test_contract_refs_resolve() -> None:
+    spec = _spec()
+    refs = _collect_refs(spec)
+    assert refs, "contract should contain at least one $ref"
+    for ref in refs:
+        assert ref.startswith("#/"), f"external ref not allowed: {ref}"
+        node = spec
+        for part in ref[2:].split("/"):
+            assert part in node, f"dangling ref: {ref}"
+            node = node[part]
