@@ -21,5 +21,16 @@ __pycache__/
 *.csproj
 *.sln
 
+# Databases
+*.db
+*.sqlite3
+
+# Node
+node_modules/
+dist/
+
+# SDD workspace
+.superpowers/
+
 # Logs
 *.log
