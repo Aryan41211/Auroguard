@@ -2,13 +2,13 @@
 
 ## Foundation
 
-- [ ] Create repository
-- [ ] Add docs
+- [x] Create repository
+- [x] Add docs
 - [ ] Pin Unity version
-- [ ] Create Python environment
-- [ ] Create FastAPI skeleton
-- [ ] Add `/health`
-- [ ] Add Git ignore rules
+- [x] Create Python environment
+- [x] Create FastAPI skeleton
+- [x] Add `/health`
+- [x] Add Git ignore rules
 
 ## Data model
 
