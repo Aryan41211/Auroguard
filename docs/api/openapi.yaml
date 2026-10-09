@@ -26,6 +26,22 @@ paths:
         "422":
           description: Invalid scenario configuration
   /api/v1/sessions:
+    get:
+      summary: List session history for the instructor dashboard
+      operationId: listSessions
+      parameters:
+        - name: trainee_id
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Session history, newest first
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionHistoryResponse"
     post:
       summary: Create a training session for a trainee
       operationId: createSession
@@ -475,3 +491,66 @@ components:
         reason:
           type: string
           description: Human-readable evidence drawn from measured session metrics.
+    SessionHistoryEntry:
+      type: object
+      required: [session_id, trainee_id, scenario_id, status, started_at, seed, difficulty, environment, time_of_day, visibility, sensor_quality, threat_count]
+      properties:
+        session_id:
+          type: string
+        trainee_id:
+          type: string
+        scenario_id:
+          type: string
+        status:
+          type: string
+          enum: [active, completed]
+        started_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        seed:
+          type: integer
+        difficulty:
+          type: integer
+        environment:
+          type: string
+          enum: [urban, rural]
+        time_of_day:
+          type: string
+          enum: [day, night]
+        visibility:
+          type: string
+          enum: [clear, reduced, poor]
+        sensor_quality:
+          type: number
+        threat_count:
+          type: integer
+        final_score:
+          type: number
+          nullable: true
+        detection_score:
+          type: number
+          nullable: true
+        classification_score:
+          type: number
+          nullable: true
+        response_score:
+          type: number
+          nullable: true
+        timing_score:
+          type: number
+          nullable: true
+        penalty:
+          type: number
+          nullable: true
+    SessionHistoryResponse:
+      type: object
+      required: [sessions]
+      properties:
+        sessions:
+          type: array
+          items:
+            $ref: "#/components/schemas/SessionHistoryEntry"

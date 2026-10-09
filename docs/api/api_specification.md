@@ -138,3 +138,43 @@ Output:
 - return meaningful HTTP status codes
 - never trust client-provided final scores
 - calculate scores server-side when backend mode is enabled
+
+## 10. List session history
+
+`GET /sessions`
+
+Feeds the instructor dashboard history table and score trends. Optional
+`trainee_id` query parameter filters to one trainee. Sessions are ordered
+newest-first by `started_at`, with `session_id` as a deterministic tie-break.
+
+Response:
+
+```json
+{
+  "sessions": [
+    {
+      "session_id": "SES-1001",
+      "trainee_id": "TRAIN-001",
+      "scenario_id": "SCN-100",
+      "status": "completed",
+      "started_at": "2026-01-01T12:00:00",
+      "completed_at": "2026-01-01T12:02:00",
+      "seed": 12345,
+      "difficulty": 5,
+      "environment": "urban",
+      "time_of_day": "night",
+      "visibility": "reduced",
+      "sensor_quality": 0.7,
+      "threat_count": 2,
+      "final_score": 82.0,
+      "detection_score": 30.0,
+      "classification_score": 25.0,
+      "response_score": 15.0,
+      "timing_score": 12.0,
+      "penalty": 0.0
+    }
+  ]
+}
+```
+
+Score fields are null while a session is still `active`.
