@@ -8,14 +8,14 @@
 
 **Tech Stack:** Python 3.12, FastAPI, Uvicorn, Pydantic, SQLAlchemy, pytest, httpx, PyYAML
 
-**Specs:** `local_setup.md` (env steps), `api_specification.md` (the 7 endpoints), `system_architecture.md` (communication), `git_workflow.md` (commit style)
+**Specs:** `docs/guides/local_setup.md` (env steps), `docs/api/api_specification.md` (the 7 endpoints), `docs/modules/system_architecture.md` (communication), `docs/project-management/git_workflow.md` (commit style)
 
 ## Global Constraints
 
-- Commits go to `main` with Conventional Commits, one logical change each (`git_workflow.md`)
-- API base is `/api/v1`, content type `application/json` (`api_specification.md §1`)
-- `GET /health` returns exactly `{"status": "ok"}` (`fastapi_backend.md §4`)
-- No secrets, no `.env`, no `*.db`, no `node_modules`/`dist` committed (`git_workflow.md`)
+- Commits go to `main` with Conventional Commits, one logical change each (`docs/project-management/git_workflow.md`)
+- API base is `/api/v1`, content type `application/json` (`docs/api/api_specification.md §1`)
+- `GET /health` returns exactly `{"status": "ok"}` (`docs/modules/fastapi_backend.md §4`)
+- No secrets, no `.env`, no `*.db`, no `node_modules`/`dist` committed (`docs/project-management/git_workflow.md`)
 - Every task ends with pytest green before its commit
 - venv lives at `backend/.venv` and stays gitignored
 - Test command (run from `backend/`): `.venv/Scripts/python -m pytest tests -v`
@@ -150,7 +150,7 @@ git commit -m "feat(api): add fastapi app with health endpoint"
 
 **Interfaces:**
 - Consumes: existing `.gitignore` (already covers `.venv/`, `__pycache__/`, `.env`, Unity dirs)
-- Produces: root `.gitignore` additionally ignoring `*.db`, `*.sqlite3`, `node_modules/`, `dist/`, `.superpowers/` — required by `git_workflow.md §.gitignore` and needed before Phases 3/6 create Node projects and Phase 1 creates SQLite files.
+- Produces: root `.gitignore` additionally ignoring `*.db`, `*.sqlite3`, `node_modules/`, `dist/`, `.superpowers/` — required by `docs/project-management/git_workflow.md §.gitignore` and needed before Phases 3/6 create Node projects and Phase 1 creates SQLite files.
 
 - [ ] **Step 1: Verify current ignore behavior of a database file**
 
@@ -207,7 +207,7 @@ git commit -m "chore(repo): ignore database, node and workspace artifacts"
 
 **Interfaces:**
 - Consumes: PyYAML from Task 1, test suite from Task 2
-- Produces: `docs/api/openapi.yaml` — frozen shapes for `ScenarioGenerateRequest`, `Scenario`, `ThreatProfile`, `SessionCreateRequest`, `SessionCreated`, `EventCreateRequest`, `EventCreated`, `CompleteResponse`, `ScoreResult`, `TimingMetrics`, `Mistake`, `AAR`, `PerformanceProfile`, `RecommendRequest`, `RecommendResponse`. Phases 1–6 must mirror these names and fields exactly. Endpoints: all 7 from `api_specification.md` under `/api/v1`.
+- Produces: `docs/api/openapi.yaml` — frozen shapes for `ScenarioGenerateRequest`, `Scenario`, `ThreatProfile`, `SessionCreateRequest`, `SessionCreated`, `EventCreateRequest`, `EventCreated`, `CompleteResponse`, `ScoreResult`, `TimingMetrics`, `Mistake`, `AAR`, `PerformanceProfile`, `RecommendRequest`, `RecommendResponse`. Phases 1–6 must mirror these names and fields exactly. Endpoints: all 7 from `docs/api/api_specification.md` under `/api/v1`.
 
 - [ ] **Step 1: Write the failing contract test**
 

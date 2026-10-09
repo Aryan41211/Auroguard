@@ -6,11 +6,13 @@ This folder contains the engineering blueprint and prototype-building documentat
 
 Start with:
 
-1. `start_here.md`
-2. `problem_and_scope.md`
-3. `blueprint.md`
-4. `first_vertical_slice.md`
-5. `build_order.md`
+1. `docs/guides/start_here.md`
+2. `docs/background/problem_and_scope.md`
+3. `docs/modules/blueprint.md`
+4. `docs/guides/first_vertical_slice.md`
+5. `docs/project-management/build_order.md`
+
+Docs are grouped under `docs/`: `background/`, `modules/`, `api/`, `project-management/`, `guides/`, and `plans/`. See `docs/guides/project_structure.md`.
 
 Then use the subsystem documents while implementing.
 

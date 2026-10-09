@@ -4,18 +4,18 @@
 
 **Goal:** Build the full AEROVIGIL prototype — scenario → simulate → detect/classify/respond → score → AAR → adaptive loop — with a browser client first, Unity later (user decision, 2026-10-09).
 
-**Architecture:** FastAPI + SQLite backend is the authority (scenario, scoring, AAR, adaptive); a Three.js/Vite browser client is the presentation layer; React dashboard for instructor/analytics. All communicate over `/api/v1` JSON per `api_specification.md`.
+**Architecture:** FastAPI + SQLite backend is the authority (scenario, scoring, AAR, adaptive); a Three.js/Vite browser client is the presentation layer; React dashboard for instructor/analytics. All communicate over `/api/v1` JSON per `docs/api/api_specification.md`.
 
 **Tech Stack:** Python 3.12 / FastAPI / Pydantic / SQLAlchemy / pytest · TypeScript / Vite / Three.js · React + Recharts (dashboard) · SQLite · (later: Unity, Docker)
 
-**Specs:** `first_vertical_slice.md`, `build_order.md`, `scenario_engine.md`, `scoring_engine.md`, `event_and_data_model.md`, `api_specification.md`, `aar_and_adaptive_training.md`, `ai_implementation.md`, `testing_validation.md`, `git_workflow.md`
+**Specs:** `docs/guides/first_vertical_slice.md`, `docs/project-management/build_order.md`, `docs/modules/scenario_engine.md`, `docs/modules/scoring_engine.md`, `docs/modules/event_and_data_model.md`, `docs/api/api_specification.md`, `docs/modules/aar_and_adaptive_training.md`, `docs/modules/ai_implementation.md`, `docs/guides/testing_validation.md`, `docs/project-management/git_workflow.md`
 
 ## Global Constraints
 
-- **Git:** direct commits to `main`, Conventional Commits, commit after every meaningful change, push at each phase end (`git_workflow.md`)
-- **Safety:** abstract responses only; no targeting/interception/real-drone logic (`safety_scope.md`)
+- **Git:** direct commits to `main`, Conventional Commits, commit after every meaningful change, push at each phase end (`docs/project-management/git_workflow.md`)
+- **Safety:** abstract responses only; no targeting/interception/real-drone logic (`docs/background/safety_scope.md`)
 - **Determinism:** same seed + generator_version ⇒ identical scenario (NFR-01); golden tests enforce it
-- **Authority split:** client never scores; server scores from events (`scoring_engine.md §11`)
+- **Authority split:** client never scores; server scores from events (`docs/modules/scoring_engine.md §11`)
 - **Offline-first:** everything runs on localhost, no cloud
 - **Quality gates before any phase-complete claim:** `pytest` green + `git status` clean + `git log` reviewed (verification-before-completion)
 
@@ -25,7 +25,7 @@
 2. Execute → subagent-driven-development (fresh subagent per task)
 3. auto-pilot auto-loads skills: `fastapi-service` + `ml-pytest` for backend tasks, `frequent-commits` for every commit, `docker-compose-ml` at Phase 7
 4. After each task: pytest green → commit → after each feature block: push `main`
-5. Phase close: verification-before-completion checklist → update `development_checklist.md` → push
+5. Phase close: verification-before-completion checklist → update `docs/project-management/development_checklist.md` → push
 
 ## File Structure (target end-state)
 
@@ -55,23 +55,23 @@ docs/api/openapi.yaml   (frozen v1 contract)
 
 ## Phase 1 — Scenario engine (1–2 days)
 
-**Tasks:** enums · Pydantic `Scenario`/`ThreatProfile` mirroring contract · seeded generator (`random.Random(seed)`) · validator (`scenario_engine.md §8`) · anti-repetition cooldown · `POST /scenarios/generate` route → service · tests: determinism (seed 12345 twice ⇒ identical), validation rejections, label legality, spawn-times-in-range.
+**Tasks:** enums · Pydantic `Scenario`/`ThreatProfile` mirroring contract · seeded generator (`random.Random(seed)`) · validator (`docs/modules/scenario_engine.md §8`) · anti-repetition cooldown · `POST /scenarios/generate` route → service · tests: determinism (seed 12345 twice ⇒ identical), validation rejections, label legality, spawn-times-in-range.
 **DoD:** `pytest tests/test_scenarios.py -v` green; same seed reproducible via curl.
 
 ## Phase 2 — Scoring + events + SQLite (2–3 days)
 
 **Tasks:** `Event` schema + type enum · scoring service as pure function `score(scenario, events) -> ScoreResult` (30/30/25/15 weights, penalties, clamp, `scoring_version=1`) · **golden-file tests** covering all decision-tree branches · SQLAlchemy models (scenarios, sessions, events, scores, performance_profiles) · `POST /sessions`, `.../events`, `.../complete` (server computes score) · API→DB→scoring integration test.
-**DoD:** every scoring branch tested; session completion via HTTP persists score; `testing_validation.md §3` covered.
+**DoD:** every scoring branch tested; session completion via HTTP persists score; `docs/guides/testing_validation.md §3` covered.
 
 ## Phase 3 — Browser client vertical slice (3–4 days) ⭐ first demo
 
 **Tasks:** Vite+TS scaffold, `api/client.ts` generated from contract · Three.js scene (ground, fog, directional light) · threat on deterministic path spawned at `spawn_time` · state machine `idle → detect → classify → respond → resolve → complete` · UI panels (HUD, DETECT, classification labels, response choices) · event submission with `timestamp_ms` · AAR screen · scenario reload with new seed.
-**DoD:** `first_vertical_slice.md` definition-of-done, recorded as screen capture.
+**DoD:** `docs/guides/first_vertical_slice.md` definition-of-done, recorded as screen capture.
 
 ## Phase 4 — AAR + adaptive engine (2 days)
 
-**Tasks:** AAR service (summary, scores, timing, mistakes, chronological timeline, condition-sliced weaknesses) → `GET .../aar` · performance aggregation → `GET .../performance` · rule-based recommender (≥90×3 ⇒ +1, <60×2 ⇒ −1, night < overall−15 ⇒ night bias) with metric-built reason → `POST /training/recommend` · tests from `testing_validation.md §5`.
-**DoD:** all five `demo_validation.md` questions answer YES via tests/script.
+**Tasks:** AAR service (summary, scores, timing, mistakes, chronological timeline, condition-sliced weaknesses) → `GET .../aar` · performance aggregation → `GET .../performance` · rule-based recommender (≥90×3 ⇒ +1, <60×2 ⇒ −1, night < overall−15 ⇒ night bias) with metric-built reason → `POST /training/recommend` · tests from `docs/guides/testing_validation.md §5`.
+**DoD:** all five `docs/project-management/demo_validation.md` questions answer YES via tests/script.
 
 ## Phase 5 — Content expansion (2–3 days)
 
@@ -85,12 +85,12 @@ docs/api/openapi.yaml   (frozen v1 contract)
 
 ## Phase 7 — Replay, demo polish, deployment (2 days)
 
-**Tasks:** deterministic replay (seed + events → timeline scrubber) · sound/UI polish · full `demo_validation.md` run with evidence collection · optional docker-compose · troubleshooting pass.
+**Tasks:** deterministic replay (seed + events → timeline scrubber) · sound/UI polish · full `docs/project-management/demo_validation.md` run with evidence collection · optional docker-compose · troubleshooting pass.
 **DoD:** demo script passes twice; replay reproduces sessions identically.
 
 ## Phase 8 (optional) — Unity client spike
 
-Pin Unity LTS, minimal scene, `/health` then scenario flow (`local_setup.md §6-8`). Gate: only after Phase 7 DoD.
+Pin Unity LTS, minimal scene, `/health` then scenario flow (`docs/guides/local_setup.md §6-8`). Gate: only after Phase 7 DoD.
 
 ---
 
@@ -112,6 +112,6 @@ Pin Unity LTS, minimal scene, `/health` then scenario flow (`local_setup.md §6-
 ## Risks & mitigations
 
 - **Scope creep in Phase 3** → DoD is the 8-point slice checklist, nothing visual beyond primitives
-- **Scoring churn breaks golden tests** → `testing_validation.md §8`: scoring changes bump `scoring_version`; tests pin it
+- **Scoring churn breaks golden tests** → `docs/guides/testing_validation.md §8`: scoring changes bump `scoring_version`; tests pin it
 - **Contract drift client/server** → single source `docs/api/openapi.yaml`, regenerate types both sides each phase
 - **Unity rabbit hole** → hard gate: Phase 8 only after Phase 7 DoD
