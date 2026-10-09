@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.aar import router as aar_router
 from app.api.scenarios import router as scenarios_router
 from app.api.sessions import router as sessions_router
 from app.db.database import init_db
@@ -29,6 +30,7 @@ app.state.recent_configs = RecentConfigTracker()
 
 app.include_router(scenarios_router, prefix="/api/v1")
 app.include_router(sessions_router, prefix="/api/v1")
+app.include_router(aar_router, prefix="/api/v1")
 
 
 @app.get("/health")
