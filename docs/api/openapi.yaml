@@ -429,6 +429,22 @@ components:
           type: number
         low_visibility_score:
           type: number
+        urban_score:
+          type: number
+        rural_score:
+          type: number
+        clear_visibility_score:
+          type: number
+        reduced_visibility_score:
+          type: number
+        poor_visibility_score:
+          type: number
+        high_sensor_score:
+          type: number
+        medium_sensor_score:
+          type: number
+        low_sensor_score:
+          type: number
         current_level:
           type: integer
           minimum: 1

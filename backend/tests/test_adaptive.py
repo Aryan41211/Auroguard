@@ -11,12 +11,13 @@ from app.services.adaptive import (
 
 
 def _summary(final=80.0, detection=24.0, classification=24.0, response=20.0,
-             time_of_day="day", visibility="clear", threat_count=1, reaction=2000.0,
-             environment="urban") -> SessionSummary:
+              time_of_day="day", visibility="clear", threat_count=1, reaction=2000.0,
+              environment="urban", sensor_quality=0.8) -> SessionSummary:
     return SessionSummary(
         final_score=final, detection_score=detection, classification_score=classification,
         response_score=response, environment=environment, time_of_day=time_of_day,
         visibility=visibility, threat_count=threat_count, average_reaction_ms=reaction,
+        sensor_quality=sensor_quality,
     )
 
 
@@ -37,7 +38,8 @@ def test_aggregate_performance() -> None:
     sessions = [
         _summary(final=100.0, detection=30.0, classification=30.0, response=25.0, time_of_day="day"),
         _summary(final=60.0, detection=30.0, classification=0.0, response=0.0,
-                 time_of_day="night", visibility="reduced", threat_count=3, reaction=4000.0),
+                 time_of_day="night", visibility="reduced", threat_count=3, reaction=4000.0,
+                 environment="rural", sensor_quality=0.5),
     ]
     profile = aggregate_performance("TRAIN-001", sessions, current_level=4)
     assert profile.session_count == 2
@@ -50,6 +52,27 @@ def test_aggregate_performance() -> None:
     assert profile.low_visibility_score == 60.0
     assert profile.average_reaction_time_ms == 3000.0
     assert profile.current_level == 4
+    # Phase 5: condition-specific metrics
+    assert profile.urban_score == 100.0
+    assert profile.rural_score == 60.0
+    assert profile.clear_visibility_score == 100.0
+    assert profile.reduced_visibility_score == 60.0
+    assert profile.poor_visibility_score is None  # no poor-visibility sessions
+    assert profile.high_sensor_score == 100.0
+    assert profile.medium_sensor_score == 60.0
+    assert profile.low_sensor_score is None  # no low-sensor sessions
+
+
+def test_aggregate_performance_sensor_bins() -> None:
+    sessions = [
+        _summary(final=90.0, sensor_quality=0.9),
+        _summary(final=70.0, sensor_quality=0.5),
+        _summary(final=50.0, sensor_quality=0.2),
+    ]
+    profile = aggregate_performance("TRAIN-BINS", sessions)
+    assert profile.high_sensor_score == 90.0
+    assert profile.medium_sensor_score == 70.0
+    assert profile.low_sensor_score == 50.0
 
 
 def test_aggregate_performance_empty() -> None:
@@ -103,3 +126,49 @@ def test_recommend_empty_history_defaults() -> None:
     )
     assert result.recommended_difficulty == 1
     assert "no completed sessions" in result.reason.lower()
+
+
+def test_recommend_targets_weak_environment_without_raising_difficulty() -> None:
+    result = build_recommendation(
+        _input(urban_score=60.0, rural_score=85.0, overall_score=85.0, current_level=5)
+    )
+    assert result.environment.value == "urban"
+    assert result.recommended_difficulty == 5  # one dimension changes at a time
+    assert "urban" in result.reason.lower()
+    assert "60.0" in result.reason and "85.0" in result.reason
+
+
+def test_recommend_environment_picks_the_weaker_side() -> None:
+    result = build_recommendation(
+        _input(urban_score=84.0, rural_score=55.0, overall_score=84.0, current_level=4)
+    )
+    assert result.environment.value == "rural"
+    assert "rural" in result.reason.lower()
+
+
+def test_night_weakness_takes_priority_over_environment() -> None:
+    result = build_recommendation(
+        _input(night_score=55.0, urban_score=55.0, rural_score=55.0,
+               overall_score=85.0, current_level=3)
+    )
+    assert result.time_of_day.value == "night"
+    assert result.environment.value == "urban"  # last environment unchanged
+    assert "night" in result.reason.lower()
+
+
+def test_recommend_reason_cites_visibility_and_sensor_weaknesses() -> None:
+    result = build_recommendation(
+        _input(poor_visibility_score=58.0, low_sensor_score=62.0, overall_score=85.0)
+    )
+    reason = result.reason.lower()
+    assert "poor-visibility score 58.0" in reason
+    assert "low-sensor score 62.0" in reason
+    assert "weakened conditions" in reason
+
+
+def test_recommend_reason_omits_evidence_when_conditions_are_strong() -> None:
+    result = build_recommendation(
+        _input(reduced_visibility_score=82.0, poor_visibility_score=84.0,
+               low_sensor_score=80.0, overall_score=85.0)
+    )
+    assert "weakened conditions" not in result.reason.lower()

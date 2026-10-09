@@ -115,6 +115,14 @@ class PerformanceProfileRow(Base):
     day_score: Mapped[float | None] = mapped_column(Float, nullable=True)
     multi_threat_score: Mapped[float | None] = mapped_column(Float, nullable=True)
     low_visibility_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    urban_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    rural_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    clear_visibility_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    reduced_visibility_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    poor_visibility_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    high_sensor_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    medium_sensor_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    low_sensor_score: Mapped[float | None] = mapped_column(Float, nullable=True)
     current_level: Mapped[int] = mapped_column(Integer, default=1)
 
 

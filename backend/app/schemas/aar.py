@@ -60,6 +60,14 @@ class PerformanceProfile(BaseModel):
     day_score: float | None = None
     multi_threat_score: float | None = None
     low_visibility_score: float | None = None
+    urban_score: float | None = None
+    rural_score: float | None = None
+    clear_visibility_score: float | None = None
+    reduced_visibility_score: float | None = None
+    poor_visibility_score: float | None = None
+    high_sensor_score: float | None = None
+    medium_sensor_score: float | None = None
+    low_sensor_score: float | None = None
     current_level: int = Field(default=1, ge=1, le=10)
 
 

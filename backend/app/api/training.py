@@ -86,6 +86,7 @@ def _summary(db: Session, session: SessionRow) -> SessionSummary | None:
         visibility=scenario.visibility,
         threat_count=len(json.loads(scenario.threats_json)),
         average_reaction_ms=_average_reaction_ms(db, session.session_id),
+        sensor_quality=scenario.sensor_quality,
     )
 
 
@@ -122,6 +123,14 @@ def _upsert_profile(db: Session, profile: PerformanceProfile) -> None:
     row.day_score = profile.day_score
     row.multi_threat_score = profile.multi_threat_score
     row.low_visibility_score = profile.low_visibility_score
+    row.urban_score = profile.urban_score
+    row.rural_score = profile.rural_score
+    row.clear_visibility_score = profile.clear_visibility_score
+    row.reduced_visibility_score = profile.reduced_visibility_score
+    row.poor_visibility_score = profile.poor_visibility_score
+    row.high_sensor_score = profile.high_sensor_score
+    row.medium_sensor_score = profile.medium_sensor_score
+    row.low_sensor_score = profile.low_sensor_score
     row.current_level = profile.current_level
     db.commit()
 
@@ -153,6 +162,11 @@ def recommend_training(
         last_time_of_day=last.time_of_day if last else "day",
         last_threat_count=last.threat_count if last else 1,
         current_level=level,
+        urban_score=profile.urban_score,
+        rural_score=profile.rural_score,
+        reduced_visibility_score=profile.reduced_visibility_score,
+        poor_visibility_score=profile.poor_visibility_score,
+        low_sensor_score=profile.low_sensor_score,
     )
     response = build_recommendation(data)
     profile.current_level = response.recommended_difficulty
