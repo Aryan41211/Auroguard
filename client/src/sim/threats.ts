@@ -3,6 +3,10 @@ import type { SpeedClass, ThreatProfile } from "../api/types";
 
 const SPEED_UNITS: Record<SpeedClass, number> = { slow: 3, medium: 6, fast: 10 };
 
+// Color is derived from the threat id hash only, never from classification_label,
+// so the render cannot reveal the ground-truth category the trainee must judge.
+const PALETTE = [0x8899aa, 0x99aa88, 0xaa8899, 0x88aabb, 0xbbaa88] as const;
+
 export interface ThreatView {
   profile: ThreatProfile;
   mesh: THREE.Object3D;
@@ -19,7 +23,7 @@ function hashString(value: string): number {
 export function createThreatView(profile: ThreatProfile): ThreatView {
   const hash = hashString(profile.id);
   const geometry = new THREE.BoxGeometry(2, 1, 2);
-  const color = profile.classification_label === "hostile" ? 0xff5555 : 0x8899aa;
+  const color = PALETTE[hash % PALETTE.length];
   const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color }));
   mesh.visible = false;
   mesh.userData.startX = ((hash % 200) / 200) * 80 - 40;
