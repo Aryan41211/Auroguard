@@ -85,6 +85,16 @@
 - [x] Condition-specific weakness
 - [x] Next scenario recommendation
 
+## Content expansion (Phase 5)
+
+- [x] Generator dimension coverage tests (environment, day/night, visibility tiers, sensor bins, threat counts)
+- [x] Anti-repetition: 10 consecutive scenarios, no repeated configuration
+- [x] Client fog/noise degradation by visibility tier (visual only)
+- [x] Client night lighting adjustment (visual only)
+- [x] Multi-threat HUD with per-threat stage and color coding (ground truth kept secret)
+- [x] Per-condition metrics on performance endpoint (urban/rural, visibility tiers, sensor bins)
+- [x] Condition-specific recommendation evidence
+
 ## Polish
 
 - [ ] Better assets
