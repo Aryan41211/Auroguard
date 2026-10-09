@@ -3,6 +3,7 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.scenarios import router as scenarios_router
 from app.api.sessions import router as sessions_router
@@ -17,6 +18,13 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="AEROVIGIL API", version="1.0.0", lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.state.recent_configs = RecentConfigTracker()
 
 app.include_router(scenarios_router, prefix="/api/v1")
