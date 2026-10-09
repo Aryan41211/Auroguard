@@ -55,9 +55,9 @@
 - [x] Session endpoint
 - [x] Event endpoint
 - [x] Complete-session endpoint
-- [ ] AAR endpoint
-- [ ] Performance endpoint
-- [ ] Recommendation endpoint
+- [x] AAR endpoint
+- [x] Performance endpoint
+- [x] Recommendation endpoint
 
 ## Scoring
 
@@ -71,19 +71,19 @@
 
 ## AAR
 
-- [ ] Summary
-- [ ] Metrics
-- [ ] Errors
-- [ ] Timeline
-- [ ] Weakness detection
-- [ ] Recommendation
+- [x] Summary
+- [x] Metrics
+- [x] Errors
+- [x] Timeline
+- [x] Weakness detection
+- [x] Recommendation
 
 ## Adaptive training
 
-- [ ] Historical performance
-- [ ] Difficulty adjustment
-- [ ] Condition-specific weakness
-- [ ] Next scenario recommendation
+- [x] Historical performance
+- [x] Difficulty adjustment
+- [x] Condition-specific weakness
+- [x] Next scenario recommendation
 
 ## Polish
 
