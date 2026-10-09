@@ -5,6 +5,17 @@ body { margin: 0; font-family: system-ui, sans-serif; background: #0b0f14; color
 .panel { position: absolute; background: rgba(10, 20, 30, 0.85); border: 1px solid #2a3b4d; border-radius: 8px; padding: 12px; }
 #start-panel, #aar-panel { inset: 0; display: flex; align-items: center; justify-content: center; }
 #hud { top: 12px; left: 12px; min-width: 220px; font-size: 13px; }
+.hud-threat-count { margin-top: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #8b98a5; }
+.hud-threats { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-direction: column; gap: 4px; }
+.hud-threat { display: flex; align-items: center; gap: 6px; padding: 3px 6px; border: 1px solid #2a3b4d; border-radius: 6px; }
+.hud-threat.is-selected { border-color: #1f6feb; background: rgba(31, 111, 235, 0.15); }
+.hud-dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+.hud-id { font-weight: 600; }
+.hud-selected { font-size: 11px; color: #58a6ff; }
+.hud-stage { margin-left: auto; font-size: 11px; color: #8b98a5; }
+.hud-stage-detected { color: #d29922; }
+.hud-stage-classified { color: #d29922; }
+.hud-stage-responded { color: #3fb950; }
 #actions { bottom: 12px; left: 12px; display: flex; gap: 8px; flex-wrap: wrap; max-width: 70vw; }
 button { background: #1f6feb; color: #fff; border: 0; border-radius: 6px; padding: 8px 12px; cursor: pointer; }
 button:disabled { background: #30363d; cursor: default; }

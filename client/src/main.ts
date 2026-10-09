@@ -58,6 +58,17 @@ function startPlay(scenario: Scenario, sessionId: string, traineeId: string): vo
   let selected: string | null = scenario.threats[0]?.id ?? null;
   const hud = mountHud(app, scenario);
 
+  // Push per-threat stage changes (spawn/detect/classify/respond) into the HUD.
+  let hudStageKey = "";
+  function syncHudThreats(): void {
+    const states = controller.threats.map((t) => ({ id: t.profile.id, stage: t.stage }));
+    const key = states.map((s) => `${s.id}:${s.stage}`).join("|");
+    if (key !== hudStageKey) {
+      hudStageKey = key;
+      hud.setThreats(states);
+    }
+  }
+
   const spawner = new Spawner(scenario, (id) => {
     controller.spawnThreat(id);
     selected = id;
@@ -113,6 +124,7 @@ function startPlay(scenario: Scenario, sessionId: string, traineeId: string): vo
     const elapsedSec = (performance.now() - startedAt) / 1000;
     spawner.update(elapsedSec);
     for (const view of views.values()) updateThreatView(view, elapsedSec);
+    syncHudThreats();
     hud.setRemaining(scenario.duration_seconds - elapsedSec);
     sim.render();
     if (!finishing && elapsedSec >= scenario.duration_seconds) {
