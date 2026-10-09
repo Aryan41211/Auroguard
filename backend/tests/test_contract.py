@@ -41,7 +41,7 @@ def _spec() -> dict:
 def test_contract_is_openapi_3() -> None:
     spec = _spec()
     assert spec["openapi"].startswith("3.")
-    assert spec["info"]["title"] == "AEROVIGIL API"
+    assert spec["info"]["title"] == "Aeroguard API"
 
 
 def test_contract_lists_all_v1_endpoints() -> None:
