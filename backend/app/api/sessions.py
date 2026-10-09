@@ -101,8 +101,6 @@ def submit_event(
             continue
         return EventCreated(event_id=event.event_id, accepted=True)
 
-    raise RuntimeError("unreachable: event_id allocation exhausted")
-
 
 @router.post("/sessions/{session_id}/complete", response_model=CompleteResponse)
 def complete_session(

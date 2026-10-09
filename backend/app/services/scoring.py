@@ -22,7 +22,6 @@ SCORING_VERSION = 1
 DETECTION_MAX = 30
 CLASSIFICATION_MAX = 30
 RESPONSE_MAX = 25
-TIMING_MAX = 15
 FALSE_ALARM_PENALTY = 5
 
 TARGET_MS = 3000
@@ -47,7 +46,7 @@ def _first_event(
     events: list[EventCreateRequest], event_type: EventType, threat_id: str
 ) -> EventCreateRequest | None:
     for event in events:
-        if event.type is event_type and event.threat_id == threat_id:
+        if event.type == event_type and event.threat_id == threat_id:
             return event
     return None
 
@@ -89,7 +88,7 @@ def score(
             latency_ms = response.timestamp_ms - detection.timestamp_ms
             timing_total += timing_points(max(latency_ms, 0))
 
-    false_alarms = sum(1 for e in events if e.type is EventType.FALSE_ALARM)
+    false_alarms = sum(1 for e in events if e.type == EventType.FALSE_ALARM)
 
     detection_score = _round2(DETECTION_MAX * detected_count / total) if total else 0.0
     classification_score = (
