@@ -29,13 +29,17 @@ def generate_scenario_route(
     try:
         scenario = generate_with_anti_repetition(body, tracker)
         validate_scenario(scenario)
+        existing = db.get(ScenarioRow, scenario.scenario_id)
+        if existing is not None:
+            stored = existing.to_schema()
+            validate_scenario(stored)
+            return stored
     except (InfeasibleScenarioError, ScenarioValidationError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
-    if db.get(ScenarioRow, scenario.scenario_id) is None:
-        db.add(ScenarioRow.from_schema(scenario))
-        try:
-            db.commit()
-        except IntegrityError:
-            db.rollback()
+    db.add(ScenarioRow.from_schema(scenario))
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
     return scenario
