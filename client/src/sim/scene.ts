@@ -38,9 +38,12 @@ export function createSimScene(container: HTMLElement, scenario: Scenario): SimS
   function resize(): void {
     const width = container.clientWidth;
     const height = container.clientHeight;
-    renderer.setSize(width, height, false);
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(width, height);
+    if (height > 0) {
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    }
   }
   resize();
   window.addEventListener("resize", resize);
