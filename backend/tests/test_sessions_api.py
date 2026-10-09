@@ -175,3 +175,53 @@ def test_events_rejected_after_completion(client) -> None:
         json={"type": "THREAT_DETECTED", "timestamp_ms": 5000, "threat_id": "T01"},
     )
     assert response.status_code == 422
+
+
+def _false_alarm_flow(client, false_alarm_count: int) -> str:
+    scenario_id = client.post(
+        "/api/v1/scenarios/generate",
+        json={
+            "difficulty": 3,
+            "environment": "urban",
+            "time_of_day": "day",
+            "threat_count": 1,
+            "seed": 4242,
+        },
+    ).json()["scenario_id"]
+    session_id = client.post(
+        "/api/v1/sessions",
+        json={"trainee_id": "TRAIN-001", "scenario_id": scenario_id},
+    ).json()["session_id"]
+    for i in range(false_alarm_count):
+        response = client.post(
+            f"/api/v1/sessions/{session_id}/events",
+            json={"type": "FALSE_ALARM", "timestamp_ms": 500 + 100 * i},
+        )
+        assert response.status_code == 201
+    return session_id
+
+
+def test_single_false_alarm_penalizes_five_points(client, db_session) -> None:
+    from app.db.models import ScoreRow
+
+    session_id = _false_alarm_flow(client, false_alarm_count=1)
+    body = client.post(f"/api/v1/sessions/{session_id}/complete").json()
+    assert body["final_score"] == 0.0
+
+    row = db_session.get(ScoreRow, session_id)
+    assert row is not None
+    assert row.penalty == 5.0
+    assert row.final_score == 0.0
+
+
+def test_two_false_alarms_accumulate_ten_point_penalty(client, db_session) -> None:
+    from app.db.models import ScoreRow
+
+    session_id = _false_alarm_flow(client, false_alarm_count=2)
+    body = client.post(f"/api/v1/sessions/{session_id}/complete").json()
+    assert body["final_score"] == 0.0
+
+    row = db_session.get(ScoreRow, session_id)
+    assert row is not None
+    assert row.penalty == 10.0
+    assert row.final_score == 0.0
