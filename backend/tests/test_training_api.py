@@ -50,6 +50,10 @@ def test_recommend_unknown_trainee_is_404(client) -> None:
     assert client.post("/api/v1/training/recommend", json={"trainee_id": "TRAIN-NONE"}).status_code == 404
 
 
+def test_recommend_invalid_body_is_422(client) -> None:
+    assert client.post("/api/v1/training/recommend", json={}).status_code == 422
+
+
 def test_recommend_defaults_for_active_only_trainee(client) -> None:
     scenario = _scenario(client, 3)
     client.post(

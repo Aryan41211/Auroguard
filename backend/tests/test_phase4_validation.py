@@ -43,6 +43,8 @@ def test_q2_same_events_reproduce_score(client) -> None:
     first = score("SES-A", scenario, events).model_dump(exclude={"session_id"})
     second = score("SES-B", scenario, events).model_dump(exclude={"session_id"})
     assert first == second
+    no_events = score("SES-C", scenario, []).model_dump(exclude={"session_id"})
+    assert no_events != first
 
 
 def test_q3_missed_threat_appears_in_aar(client) -> None:

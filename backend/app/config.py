@@ -13,4 +13,4 @@ DATABASE_URL: str = os.environ.get(
 LLM_BASE_URL: str | None = os.environ.get("AEROGUARD_LLM_BASE_URL")
 LLM_API_KEY: str | None = os.environ.get("AEROGUARD_LLM_API_KEY")
 LLM_MODEL: str | None = os.environ.get("AEROGUARD_LLM_MODEL")
-LLM_TIMEOUT_S: float = float(os.environ.get("AEROGUARD_LLM_TIMEOUT_S", "5"))
+LLM_TIMEOUT_S: float = float(os.environ.get("AEROGUARD_LLM_TIMEOUT_S") or "5")

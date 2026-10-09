@@ -46,6 +46,11 @@ def test_mistake_requires_kind_and_timestamp() -> None:
         Mistake(kind="not_a_kind", timestamp_ms=0)
 
 
+def test_mistake_requires_timestamp() -> None:
+    with pytest.raises(ValidationError):
+        Mistake(kind=MistakeKind.missed_threat)
+
+
 def test_performance_profile_defaults_and_bounds() -> None:
     profile = PerformanceProfile(
         trainee_id="TRAIN-001", session_count=2,

@@ -100,8 +100,12 @@ class LlmNarrator:
             response.raise_for_status()
             content = response.json()["choices"][0]["message"]["content"]
             data = json.loads(content)
-            summary = str(data["summary"]).strip()
-            recommendation = str(data["recommendation"]).strip()
+            summary_raw = data.get("summary")
+            recommendation_raw = data.get("recommendation")
+            if not isinstance(summary_raw, str) or not isinstance(recommendation_raw, str):
+                raise ValueError("non-string narrative")
+            summary = summary_raw.strip()
+            recommendation = recommendation_raw.strip()
             if not summary or not recommendation:
                 raise ValueError("empty narrative")
         except Exception:  # noqa: BLE001 — intentional resilience boundary: any LLM/transport failure degrades to the template

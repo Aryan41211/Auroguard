@@ -63,6 +63,15 @@ def test_llm_narrator_falls_back_on_error() -> None:
     assert narrative == TemplateNarrator().narrate(_facts())
 
 
+def test_llm_narrator_falls_back_on_json_null() -> None:
+    def fake_post(url, json, headers, timeout):
+        content = '{"summary": null, "recommendation": null}'
+        return _FakeResponse({"choices": [{"message": {"content": content}}]})
+
+    narrator = LlmNarrator("http://llm.local/v1", "m", post=fake_post)
+    assert narrator.narrate(_facts()) == TemplateNarrator().narrate(_facts())
+
+
 def test_llm_narrator_falls_back_on_bad_json() -> None:
     def bad(url, json, headers, timeout):
         return _FakeResponse({"choices": [{"message": {"content": "not json"}}]})
