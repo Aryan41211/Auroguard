@@ -12,8 +12,8 @@
 
 ## Data model
 
-- [ ] Scenario model
-- [ ] Threat model
+- [x] Scenario model
+- [x] Threat model
 - [ ] Session model
 - [ ] Event model
 - [ ] Score model
@@ -21,16 +21,16 @@
 
 ## Scenario engine
 
-- [ ] Seed support
-- [ ] Scenario validation
-- [ ] Environment
-- [ ] Day/night
-- [ ] Visibility
-- [ ] Sensor quality
-- [ ] Threat count
-- [ ] Difficulty
-- [ ] Spawn timing
-- [ ] Anti-repetition logic
+- [x] Seed support
+- [x] Scenario validation
+- [x] Environment
+- [x] Day/night
+- [x] Visibility
+- [x] Sensor quality
+- [x] Threat count
+- [x] Difficulty
+- [x] Spawn timing
+- [x] Anti-repetition logic
 
 ## Unity
 
@@ -48,7 +48,7 @@
 
 ## Backend
 
-- [ ] Scenario endpoint
+- [x] Scenario endpoint
 - [ ] Session endpoint
 - [ ] Event endpoint
 - [ ] Complete-session endpoint
