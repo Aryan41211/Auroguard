@@ -17,3 +17,16 @@ Docs are grouped under `docs/`: `background/`, `modules/`, `api/`, `project-mana
 Then use the subsystem documents while implementing.
 
 This pack is intentionally focused on building the actual software prototype, not on PPT preparation.
+
+## Running the Phase 3 demo (browser client)
+
+1. Backend: `cd backend && .venv/Scripts/python -m uvicorn app.main:app --reload --port 8000`
+2. Client: `cd client && npm install && npm run dev`
+3. Open http://localhost:5173, start a scenario, detect/classify/respond, finish, and review the AAR.
+
+Pixel-level visual checks (3D scene rendering, threat movement, AAR layout)
+are a human browser step: open the client, run a full session, and confirm
+the scene, HUD, action buttons, and scorecard render as expected.
+
+Client unit tests: `cd client && npm test`
+Backend tests: `cd backend && .venv/Scripts/python -m pytest tests -q`
