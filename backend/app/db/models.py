@@ -9,6 +9,7 @@ from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.database import Base
+from app.schemas.events import EventCreateRequest, EventType
 from app.schemas.scenario import Scenario, ThreatProfile
 
 
@@ -115,3 +116,12 @@ class PerformanceProfileRow(Base):
     multi_threat_score: Mapped[float | None] = mapped_column(Float, nullable=True)
     low_visibility_score: Mapped[float | None] = mapped_column(Float, nullable=True)
     current_level: Mapped[int] = mapped_column(Integer, default=1)
+
+
+def event_row_to_request(row: EventRow) -> EventCreateRequest:
+    return EventCreateRequest(
+        type=EventType(row.type),
+        timestamp_ms=row.timestamp_ms,
+        threat_id=row.threat_id,
+        payload=json.loads(row.payload_json),
+    )
