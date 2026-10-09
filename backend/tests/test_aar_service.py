@@ -109,3 +109,25 @@ def test_false_alarm_and_wrong_classification_and_wrong_response() -> None:
     assert facts.false_alarms == 1
     # mistakes are ordered by timestamp
     assert [m.timestamp_ms for m in facts.mistakes] == sorted(m.timestamp_ms for m in facts.mistakes)
+
+
+def test_build_aar_assembles_narrative_and_ordered_timeline() -> None:
+    from app.services.aar import build_aar
+
+    scenario = _scenario(_HOSTILE)
+    events = [
+        EventCreateRequest(
+            type="RESPONSE_SUBMITTED", timestamp_ms=12000, threat_id="T01",
+            payload={"response": "hold"},
+        ),
+        EventCreateRequest(type="THREAT_DETECTED", timestamp_ms=10500, threat_id="T01"),
+        EventCreateRequest(
+            type="CLASSIFICATION_SUBMITTED", timestamp_ms=11000, threat_id="T01",
+            payload={"label": "hostile"},
+        ),
+    ]
+    aar = build_aar("SES-TEST", scenario, events, _score(scenario, events))
+    assert aar.scenario_id == "SCN-000001"
+    assert aar.summary.startswith("Final score")
+    assert [e.timestamp_ms for e in aar.timeline] == [10500, 11000, 12000]
+    assert aar.scores.final_score == 100.0

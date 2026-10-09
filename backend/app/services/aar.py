@@ -12,10 +12,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from app.schemas.aar import Mistake, MistakeKind, TimingMetrics
+from app.schemas.aar import AAR, Mistake, MistakeKind, TimingMetrics
 from app.schemas.events import EventCreateRequest, EventType
 from app.schemas.scenario import Scenario, ThreatProfile
 from app.schemas.scoring import ScoreResult
+from app.services.aar_narrator import Narrator, TemplateNarrator
 from app.services.scoring import CLASSIFICATION_MAX, DETECTION_MAX, RESPONSE_MAX
 
 TIMING_MAX = 15
@@ -215,4 +216,28 @@ def build_aar_facts(
         strengths=strengths,
         weaknesses=weaknesses,
         weakest_dimension=weakest,
+    )
+
+
+def build_aar(
+    session_id: str,
+    scenario: Scenario,
+    events: list[EventCreateRequest],
+    score_result: ScoreResult,
+    narrator: Narrator | None = None,
+) -> AAR:
+    facts = build_aar_facts(session_id, scenario, events, score_result)
+    narrative = (narrator or TemplateNarrator()).narrate(facts)
+    timeline = sorted(events, key=lambda event: event.timestamp_ms)
+    return AAR(
+        session_id=session_id,
+        scenario_id=scenario.scenario_id,
+        summary=narrative.summary,
+        scores=score_result,
+        timing=facts.timing,
+        mistakes=list(facts.mistakes),
+        strengths=list(facts.strengths),
+        weaknesses=list(facts.weaknesses),
+        recommendation=narrative.recommendation,
+        timeline=timeline,
     )
