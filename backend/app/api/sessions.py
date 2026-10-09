@@ -19,6 +19,7 @@ from app.db.models import (
     event_row_to_request,
 )
 from app.schemas.events import EventCreateRequest, EventCreated
+from app.schemas.history import SessionHistoryEntry, SessionHistoryResponse
 from app.schemas.session import (
     CompleteResponse,
     SessionCreateRequest,
@@ -61,6 +62,49 @@ def create_session(
     db.add(session)
     db.commit()
     return SessionCreated(session_id=session.session_id, status="active")
+
+
+@router.get("/sessions", response_model=SessionHistoryResponse)
+def list_sessions(
+    trainee_id: str | None = None, db: Session = Depends(get_db)
+) -> SessionHistoryResponse:
+    """List sessions newest-first for the instructor dashboard (read-only)."""
+    query = db.query(SessionRow).order_by(
+        SessionRow.started_at.desc(), SessionRow.session_id.desc()
+    )
+    if trainee_id is not None:
+        query = query.filter(SessionRow.trainee_id == trainee_id)
+
+    entries: list[SessionHistoryEntry] = []
+    for session in query.all():
+        scenario = db.get(ScenarioRow, session.scenario_id)
+        if scenario is None:
+            continue
+        score = db.get(ScoreRow, session.session_id)
+        entries.append(
+            SessionHistoryEntry(
+                session_id=session.session_id,
+                trainee_id=session.trainee_id,
+                scenario_id=session.scenario_id,
+                status=session.status,
+                started_at=session.started_at,
+                completed_at=session.completed_at,
+                seed=scenario.seed,
+                difficulty=scenario.difficulty,
+                environment=scenario.environment,
+                time_of_day=scenario.time_of_day,
+                visibility=scenario.visibility,
+                sensor_quality=scenario.sensor_quality,
+                threat_count=len(json.loads(scenario.threats_json)),
+                final_score=score.final_score if score else None,
+                detection_score=score.detection_score if score else None,
+                classification_score=score.classification_score if score else None,
+                response_score=score.response_score if score else None,
+                timing_score=score.timing_score if score else None,
+                penalty=score.penalty if score else None,
+            )
+        )
+    return SessionHistoryResponse(sessions=entries)
 
 
 @router.post(
