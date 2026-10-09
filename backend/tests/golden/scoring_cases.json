@@ -1,0 +1,169 @@
+[
+  {
+    "name": "correct_detection_fast",
+    "scenario": {
+      "scenario_id": "SCN-000001", "seed": 1, "generator_version": "1.0",
+      "difficulty": 3, "environment": "rural", "time_of_day": "day",
+      "visibility": "clear", "sensor_quality": 0.9, "duration_seconds": 120.0,
+      "threats": [{"id": "T01", "classification_label": "hostile", "expected_response": "hold", "spawn_time": 10.0, "speed_class": "fast"}]
+    },
+    "events": [
+      {"type": "THREAT_DETECTED", "timestamp_ms": 1000, "threat_id": "T01", "payload": {}},
+      {"type": "CLASSIFICATION_SUBMITTED", "timestamp_ms": 2000, "threat_id": "T01", "payload": {"label": "hostile"}},
+      {"type": "RESPONSE_SUBMITTED", "timestamp_ms": 3000, "threat_id": "T01", "payload": {"response": "hold"}}
+    ],
+    "expected": {"detection_score": 30.0, "classification_score": 30.0, "response_score": 25.0, "timing_score": 15.0, "penalty": 0.0, "final_score": 100.0, "scoring_version": 1}
+  },
+  {
+    "name": "missed_threat",
+    "scenario": {
+      "scenario_id": "SCN-000001", "seed": 1, "generator_version": "1.0",
+      "difficulty": 3, "environment": "rural", "time_of_day": "day",
+      "visibility": "clear", "sensor_quality": 0.9, "duration_seconds": 120.0,
+      "threats": [{"id": "T01", "classification_label": "hostile", "expected_response": "hold", "spawn_time": 10.0, "speed_class": "fast"}]
+    },
+    "events": [],
+    "expected": {"detection_score": 0.0, "classification_score": 0.0, "response_score": 0.0, "timing_score": 0.0, "penalty": 0.0, "final_score": 0.0, "scoring_version": 1}
+  },
+  {
+    "name": "false_alarm_penalty",
+    "scenario": {
+      "scenario_id": "SCN-000001", "seed": 1, "generator_version": "1.0",
+      "difficulty": 3, "environment": "rural", "time_of_day": "day",
+      "visibility": "clear", "sensor_quality": 0.9, "duration_seconds": 120.0,
+      "threats": [{"id": "T01", "classification_label": "hostile", "expected_response": "hold", "spawn_time": 10.0, "speed_class": "fast"}]
+    },
+    "events": [
+      {"type": "THREAT_DETECTED", "timestamp_ms": 1000, "threat_id": "T01", "payload": {}},
+      {"type": "CLASSIFICATION_SUBMITTED", "timestamp_ms": 2000, "threat_id": "T01", "payload": {"label": "hostile"}},
+      {"type": "RESPONSE_SUBMITTED", "timestamp_ms": 3000, "threat_id": "T01", "payload": {"response": "hold"}},
+      {"type": "FALSE_ALARM", "timestamp_ms": 5000, "threat_id": null, "payload": {}}
+    ],
+    "expected": {"detection_score": 30.0, "classification_score": 30.0, "response_score": 25.0, "timing_score": 15.0, "penalty": 5.0, "final_score": 95.0, "scoring_version": 1}
+  },
+  {
+    "name": "wrong_classification",
+    "scenario": {
+      "scenario_id": "SCN-000001", "seed": 1, "generator_version": "1.0",
+      "difficulty": 3, "environment": "rural", "time_of_day": "day",
+      "visibility": "clear", "sensor_quality": 0.9, "duration_seconds": 120.0,
+      "threats": [{"id": "T01", "classification_label": "hostile", "expected_response": "hold", "spawn_time": 10.0, "speed_class": "fast"}]
+    },
+    "events": [
+      {"type": "THREAT_DETECTED", "timestamp_ms": 1000, "threat_id": "T01", "payload": {}},
+      {"type": "CLASSIFICATION_SUBMITTED", "timestamp_ms": 2000, "threat_id": "T01", "payload": {"label": "unknown"}}
+    ],
+    "expected": {"detection_score": 30.0, "classification_score": 0.0, "response_score": 0.0, "timing_score": 0.0, "penalty": 0.0, "final_score": 30.0, "scoring_version": 1}
+  },
+  {
+    "name": "correct_classification_wrong_response",
+    "scenario": {
+      "scenario_id": "SCN-000001", "seed": 1, "generator_version": "1.0",
+      "difficulty": 3, "environment": "rural", "time_of_day": "day",
+      "visibility": "clear", "sensor_quality": 0.9, "duration_seconds": 120.0,
+      "threats": [{"id": "T01", "classification_label": "hostile", "expected_response": "hold", "spawn_time": 10.0, "speed_class": "fast"}]
+    },
+    "events": [
+      {"type": "THREAT_DETECTED", "timestamp_ms": 1000, "threat_id": "T01", "payload": {}},
+      {"type": "CLASSIFICATION_SUBMITTED", "timestamp_ms": 2000, "threat_id": "T01", "payload": {"label": "hostile"}},
+      {"type": "RESPONSE_SUBMITTED", "timestamp_ms": 3000, "threat_id": "T01", "payload": {"response": "monitor"}}
+    ],
+    "expected": {"detection_score": 30.0, "classification_score": 30.0, "response_score": 0.0, "timing_score": 0.0, "penalty": 0.0, "final_score": 60.0, "scoring_version": 1}
+  },
+  {
+    "name": "mid_response",
+    "scenario": {
+      "scenario_id": "SCN-000001", "seed": 1, "generator_version": "1.0",
+      "difficulty": 3, "environment": "rural", "time_of_day": "day",
+      "visibility": "clear", "sensor_quality": 0.9, "duration_seconds": 120.0,
+      "threats": [{"id": "T01", "classification_label": "hostile", "expected_response": "hold", "spawn_time": 10.0, "speed_class": "fast"}]
+    },
+    "events": [
+      {"type": "THREAT_DETECTED", "timestamp_ms": 1000, "threat_id": "T01", "payload": {}},
+      {"type": "CLASSIFICATION_SUBMITTED", "timestamp_ms": 2000, "threat_id": "T01", "payload": {"label": "hostile"}},
+      {"type": "RESPONSE_SUBMITTED", "timestamp_ms": 5000, "threat_id": "T01", "payload": {"response": "hold"}}
+    ],
+    "expected": {"detection_score": 30.0, "classification_score": 30.0, "response_score": 25.0, "timing_score": 10.0, "penalty": 0.0, "final_score": 95.0, "scoring_version": 1}
+  },
+  {
+    "name": "slow_response_boundary",
+    "scenario": {
+      "scenario_id": "SCN-000001", "seed": 1, "generator_version": "1.0",
+      "difficulty": 3, "environment": "rural", "time_of_day": "day",
+      "visibility": "clear", "sensor_quality": 0.9, "duration_seconds": 120.0,
+      "threats": [{"id": "T01", "classification_label": "hostile", "expected_response": "hold", "spawn_time": 10.0, "speed_class": "fast"}]
+    },
+    "events": [
+      {"type": "THREAT_DETECTED", "timestamp_ms": 1000, "threat_id": "T01", "payload": {}},
+      {"type": "CLASSIFICATION_SUBMITTED", "timestamp_ms": 2000, "threat_id": "T01", "payload": {"label": "hostile"}},
+      {"type": "RESPONSE_SUBMITTED", "timestamp_ms": 10000, "threat_id": "T01", "payload": {"response": "hold"}}
+    ],
+    "expected": {"detection_score": 30.0, "classification_score": 30.0, "response_score": 25.0, "timing_score": 5.0, "penalty": 0.0, "final_score": 90.0, "scoring_version": 1}
+  },
+  {
+    "name": "over_max_response",
+    "scenario": {
+      "scenario_id": "SCN-000001", "seed": 1, "generator_version": "1.0",
+      "difficulty": 3, "environment": "rural", "time_of_day": "day",
+      "visibility": "clear", "sensor_quality": 0.9, "duration_seconds": 120.0,
+      "threats": [{"id": "T01", "classification_label": "hostile", "expected_response": "hold", "spawn_time": 10.0, "speed_class": "fast"}]
+    },
+    "events": [
+      {"type": "THREAT_DETECTED", "timestamp_ms": 1000, "threat_id": "T01", "payload": {}},
+      {"type": "CLASSIFICATION_SUBMITTED", "timestamp_ms": 2000, "threat_id": "T01", "payload": {"label": "hostile"}},
+      {"type": "RESPONSE_SUBMITTED", "timestamp_ms": 11000, "threat_id": "T01", "payload": {"response": "hold"}}
+    ],
+    "expected": {"detection_score": 30.0, "classification_score": 30.0, "response_score": 25.0, "timing_score": 0.0, "penalty": 0.0, "final_score": 85.0, "scoring_version": 1}
+  },
+  {
+    "name": "classification_without_detection",
+    "scenario": {
+      "scenario_id": "SCN-000001", "seed": 1, "generator_version": "1.0",
+      "difficulty": 3, "environment": "rural", "time_of_day": "day",
+      "visibility": "clear", "sensor_quality": 0.9, "duration_seconds": 120.0,
+      "threats": [{"id": "T01", "classification_label": "hostile", "expected_response": "hold", "spawn_time": 10.0, "speed_class": "fast"}]
+    },
+    "events": [
+      {"type": "CLASSIFICATION_SUBMITTED", "timestamp_ms": 2000, "threat_id": "T01", "payload": {"label": "hostile"}}
+    ],
+    "expected": {"detection_score": 0.0, "classification_score": 0.0, "response_score": 0.0, "timing_score": 0.0, "penalty": 0.0, "final_score": 0.0, "scoring_version": 1}
+  },
+  {
+    "name": "proportional_partial",
+    "scenario": {
+      "scenario_id": "SCN-000002", "seed": 2, "generator_version": "1.0",
+      "difficulty": 5, "environment": "urban", "time_of_day": "night",
+      "visibility": "reduced", "sensor_quality": 0.5, "duration_seconds": 120.0,
+      "threats": [
+        {"id": "T01", "classification_label": "hostile", "expected_response": "hold", "spawn_time": 10.0, "speed_class": "fast"},
+        {"id": "T02", "classification_label": "friendly", "expected_response": "monitor", "spawn_time": 40.0, "speed_class": "medium"}
+      ]
+    },
+    "events": [
+      {"type": "THREAT_DETECTED", "timestamp_ms": 1000, "threat_id": "T01", "payload": {}},
+      {"type": "CLASSIFICATION_SUBMITTED", "timestamp_ms": 2000, "threat_id": "T01", "payload": {"label": "hostile"}},
+      {"type": "RESPONSE_SUBMITTED", "timestamp_ms": 3000, "threat_id": "T01", "payload": {"response": "hold"}},
+      {"type": "THREAT_DETECTED", "timestamp_ms": 1500, "threat_id": "T02", "payload": {}},
+      {"type": "CLASSIFICATION_SUBMITTED", "timestamp_ms": 2500, "threat_id": "T02", "payload": {"label": "unknown"}}
+    ],
+    "expected": {"detection_score": 30.0, "classification_score": 15.0, "response_score": 12.5, "timing_score": 7.5, "penalty": 0.0, "final_score": 65.0, "scoring_version": 1}
+  },
+  {
+    "name": "proportional_missed_and_perfect",
+    "scenario": {
+      "scenario_id": "SCN-000003", "seed": 3, "generator_version": "1.0",
+      "difficulty": 5, "environment": "urban", "time_of_day": "night",
+      "visibility": "reduced", "sensor_quality": 0.5, "duration_seconds": 120.0,
+      "threats": [
+        {"id": "T01", "classification_label": "hostile", "expected_response": "hold", "spawn_time": 10.0, "speed_class": "fast"},
+        {"id": "T02", "classification_label": "suspicious", "expected_response": "report", "spawn_time": 40.0, "speed_class": "medium"}
+      ]
+    },
+    "events": [
+      {"type": "THREAT_DETECTED", "timestamp_ms": 1000, "threat_id": "T01", "payload": {}},
+      {"type": "CLASSIFICATION_SUBMITTED", "timestamp_ms": 2000, "threat_id": "T01", "payload": {"label": "hostile"}},
+      {"type": "RESPONSE_SUBMITTED", "timestamp_ms": 3000, "threat_id": "T01", "payload": {"response": "hold"}}
+    ],
+    "expected": {"detection_score": 15.0, "classification_score": 15.0, "response_score": 12.5, "timing_score": 7.5, "penalty": 0.0, "final_score": 50.0, "scoring_version": 1}
+  }
+]
