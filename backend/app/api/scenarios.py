@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
@@ -33,5 +34,8 @@ def generate_scenario_route(
 
     if db.get(ScenarioRow, scenario.scenario_id) is None:
         db.add(ScenarioRow.from_schema(scenario))
-        db.commit()
+        try:
+            db.commit()
+        except IntegrityError:
+            db.rollback()
     return scenario

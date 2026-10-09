@@ -40,5 +40,5 @@ def client(db_session):
     app.dependency_overrides[get_db] = _override_get_db
     app.state.recent_configs = RecentConfigTracker()
     yield TestClient(app)
-    app.dependency_overrides.clear()
+    app.dependency_overrides.pop(get_db, None)
     app.state.recent_configs = RecentConfigTracker()
