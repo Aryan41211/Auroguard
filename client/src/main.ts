@@ -109,6 +109,7 @@ function startPlay(scenario: Scenario, sessionId: string, traineeId: string): vo
   }
 
   function frame(): void {
+    if (finishing) return;
     const elapsedSec = (performance.now() - startedAt) / 1000;
     spawner.update(elapsedSec);
     for (const view of views.values()) updateThreatView(view, elapsedSec);
