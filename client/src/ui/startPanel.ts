@@ -12,7 +12,7 @@ export function mountStartPanel(root: HTMLElement, onStart: (req: ScenarioGenera
   root.innerHTML = `
     <div id="start-panel" class="panel">
       <form id="start-form" style="min-width:320px">
-        <h2>AEROVIGIL</h2>
+        <h2>Aeroguard</h2>
         <label>Trainee ID <input id="trainee_id" value="TRAIN-001" /></label>
         <label>Difficulty <input id="difficulty" type="number" min="1" max="10" value="3" /></label>
         <label>Environment <select id="environment">${options(ENVIRONMENTS)}</select></label>

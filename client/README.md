@@ -1,6 +1,6 @@
-# AEROVIGIL client (Phase 3 vertical slice)
+# Aeroguard client (Phase 3 vertical slice)
 
-Browser client for the AEROVIGIL trainer: Vite + TypeScript + Three.js.
+Browser client for the Aeroguard trainer: Vite + TypeScript + Three.js.
 It renders the scenario, drives the detect/classify/respond flow, and shows
 the after-action review (AAR).
 
