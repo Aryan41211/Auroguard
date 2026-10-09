@@ -30,6 +30,8 @@ EXPECTED_SCHEMAS = {
     "PerformanceProfile",
     "RecommendRequest",
     "RecommendResponse",
+    "SessionHistoryEntry",
+    "SessionHistoryResponse",
 }
 
 
