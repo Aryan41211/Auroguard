@@ -1,4 +1,4 @@
-# AEROVIGIL — Local Laptop Setup
+# Aeroguard — Local Laptop Setup
 
 ## 1. Recommended software
 
@@ -17,8 +17,8 @@ Exact Unity version should be selected once and pinned for the team.
 ## 2. Create repository
 
 ```bash
-mkdir AEROVIGIL
-cd AEROVIGIL
+mkdir Aeroguard
+cd Aeroguard
 git init
 ```
 
@@ -65,7 +65,7 @@ Create a 3D Unity project.
 
 Recommended initial project name:
 
-`AEROVIGIL-Simulator`
+`Aeroguard-Simulator`
 
 Keep the first scene tiny.
 

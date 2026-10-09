@@ -1,4 +1,4 @@
-# AEROVIGIL — Git Workflow
+# Aeroguard — Git Workflow
 
 ## Branch policy
 

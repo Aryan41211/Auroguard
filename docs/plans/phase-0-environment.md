@@ -120,7 +120,7 @@ pythonpath = .
 ```python
 from fastapi import FastAPI
 
-app = FastAPI(title="AEROVIGIL API", version="0.1.0")
+app = FastAPI(title="Aeroguard API", version="0.1.0")
 
 
 @app.get("/health")
@@ -257,7 +257,7 @@ def _spec() -> dict:
 def test_contract_is_openapi_3() -> None:
     spec = _spec()
     assert spec["openapi"].startswith("3.")
-    assert spec["info"]["title"] == "AEROVIGIL API"
+    assert spec["info"]["title"] == "Aeroguard API"
 
 
 def test_contract_lists_all_v1_endpoints() -> None:
@@ -283,7 +283,7 @@ Create `docs/api/openapi.yaml` with exactly this content:
 ```yaml
 openapi: 3.0.3
 info:
-  title: AEROVIGIL API
+  title: Aeroguard API
   version: "1.0.0"
   description: Training simulator backend - scenario, sessions, scoring, AAR, adaptive recommendation.
 servers:

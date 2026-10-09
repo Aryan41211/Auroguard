@@ -1,4 +1,4 @@
-# AEROVIGIL — Prototype Validation
+# Aeroguard — Prototype Validation
 
 ## Goal
 

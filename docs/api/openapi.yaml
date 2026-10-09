@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: AEROVIGIL API
+  title: Aeroguard API
   version: "1.0.0"
   description: Training simulator backend - scenario, sessions, scoring, AAR, adaptive recommendation.
 servers:

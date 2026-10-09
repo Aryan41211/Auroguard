@@ -1,4 +1,4 @@
-# AEROVIGIL — Engineering Blueprint Pack
+# Aeroguard — Engineering Blueprint Pack
 
 This folder contains the engineering blueprint and prototype-building documentation for the SIH problem statement:
 

@@ -1,4 +1,4 @@
-# AEROVIGIL — Engineering Checklist
+# Aeroguard — Engineering Checklist
 
 ## Foundation
 

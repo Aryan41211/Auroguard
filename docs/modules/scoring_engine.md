@@ -1,4 +1,4 @@
-# AEROVIGIL — Scoring Engine
+# Aeroguard — Scoring Engine
 
 ## 1. Purpose
 

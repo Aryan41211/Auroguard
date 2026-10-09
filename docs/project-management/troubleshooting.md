@@ -1,4 +1,4 @@
-# AEROVIGIL — Troubleshooting
+# Aeroguard — Troubleshooting
 
 ## Unity cannot reach FastAPI
 

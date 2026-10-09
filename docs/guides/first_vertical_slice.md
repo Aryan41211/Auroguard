@@ -1,4 +1,4 @@
-# AEROVIGIL — First Vertical Slice
+# Aeroguard — First Vertical Slice
 
 This document is the exact first implementation target.
 

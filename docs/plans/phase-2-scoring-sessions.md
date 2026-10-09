@@ -19,7 +19,7 @@
 - **Scoring values (verbatim):** weights 30/30/25/15 (detection/classification/response/timing); false-alarm penalty `-5`; `final_score` clamped to `0–100`; `scoring_version = 1` (`docs/api/openapi.yaml`, `docs/modules/scoring_engine.md §2/§3/§7`).
 - **Git:** direct commits to `main`, Conventional Commits, commit after every task, push at phase end (`docs/project-management/git_workflow.md`).
 - **Quality gate:** `pytest` green (pristine, no warnings) + `git status` clean before any phase-complete claim.
-- **Offline-first:** localhost only; SQLite file `./aerovigil.db` (git-ignored).
+- **Offline-first:** localhost only; SQLite file `./aeroguard.db` (git-ignored).
 - **No new dependencies:** SQLAlchemy is already pinned (requirements.txt). Do not add or upgrade packages.
 
 ### Locked design decisions (agreed with the user, 2026-10-09)
@@ -233,7 +233,7 @@ from __future__ import annotations
 import os
 
 DATABASE_URL: str = os.environ.get(
-    "AEROVIGIL_DATABASE_URL", "sqlite:///./aerovigil.db"
+    "AEROGUARD_DATABASE_URL", "sqlite:///./aeroguard.db"
 )
 ```
 
@@ -429,7 +429,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="AEROVIGIL API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="Aeroguard API", version="1.0.0", lifespan=lifespan)
 app.state.recent_configs = RecentConfigTracker()
 
 app.include_router(scenarios_router, prefix="/api/v1")
@@ -440,7 +440,7 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 ```
 
-Note: tests use isolated engines via the `get_db` override (Task 5) and never run lifespan, so no `aerovigil.db` file is created during tests.
+Note: tests use isolated engines via the `get_db` override (Task 5) and never run lifespan, so no `aeroguard.db` file is created during tests.
 
 - [ ] **Step 9: Run tests to verify they pass**
 
@@ -1275,7 +1275,7 @@ def test_generate_rejects_invalid_threat_count(client) -> None:
 Run: `.venv/Scripts/python -m pytest tests/test_scenarios_api.py tests/test_scenario_persistence.py -v`
 Expected: PASS
 Then the full suite: `.venv/Scripts/python -m pytest tests -q`
-Expected: PASS, pristine; no `aerovigil.db` created in `backend/`.
+Expected: PASS, pristine; no `aeroguard.db` created in `backend/`.
 
 - [ ] **Step 7: Commit**
 

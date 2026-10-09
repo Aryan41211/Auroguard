@@ -1,7 +1,7 @@
-# AEROVIGIL — Recommended Project Structure
+# Aeroguard — Recommended Project Structure
 
 ```text
-AEROVIGIL/
+Aeroguard/
 │
 ├── README.md
 ├── LICENSE

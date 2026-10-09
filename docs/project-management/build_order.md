@@ -1,4 +1,4 @@
-# AEROVIGIL — Detailed Build Order
+# Aeroguard — Detailed Build Order
 
 This is an engineering implementation order.
 
@@ -7,7 +7,7 @@ This is an engineering implementation order.
 Create:
 
 ```text
-AEROVIGIL/
+Aeroguard/
 docs/
 backend/
 simulator/

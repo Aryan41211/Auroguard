@@ -1,4 +1,4 @@
-# AEROVIGIL — Testing and Validation
+# Aeroguard — Testing and Validation
 
 ## 1. Testing layers
 

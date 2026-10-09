@@ -1,4 +1,4 @@
-# AEROVIGIL — Product Requirements
+# Aeroguard — Product Requirements
 
 ## 1. Functional requirements
 

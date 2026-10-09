@@ -1,4 +1,4 @@
-# AEROVIGIL — API Specification
+# Aeroguard — API Specification
 
 ## 1. API conventions
 

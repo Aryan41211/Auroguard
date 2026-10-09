@@ -1,8 +1,8 @@
-# AEROVIGIL — Start Here
+# Aeroguard — Start Here
 
 ## Purpose
 
-AEROVIGIL is a desktop-first, VR-ready software training simulator for practicing drone-threat recognition, classification, decision-making, and performance improvement in controlled virtual scenarios.
+Aeroguard is a desktop-first, VR-ready software training simulator for practicing drone-threat recognition, classification, decision-making, and performance improvement in controlled virtual scenarios.
 
 This document is the starting point for the engineering work.
 

@@ -1,4 +1,4 @@
-# AEROVIGIL — AI and Intelligence Layer
+# Aeroguard — AI and Intelligence Layer
 
 ## 1. What "AI-enabled" means in this project
 

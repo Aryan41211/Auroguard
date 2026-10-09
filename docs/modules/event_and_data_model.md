@@ -1,4 +1,4 @@
-# AEROVIGIL — Event and Data Model
+# Aeroguard — Event and Data Model
 
 ## 1. Event sourcing concept
 

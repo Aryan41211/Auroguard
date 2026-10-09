@@ -1,4 +1,4 @@
-# AEROVIGIL — Architecture Decision Record
+# Aeroguard — Architecture Decision Record
 
 ## ADR-001 — Unity for simulation
 

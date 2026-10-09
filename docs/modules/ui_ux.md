@@ -1,4 +1,4 @@
-# AEROVIGIL — UI/UX Specification
+# Aeroguard — UI/UX Specification
 
 ## 1. Design objective
 
@@ -15,7 +15,7 @@ Prioritize:
 ## 2. Main menu
 
 ```text
-AEROVIGIL
+Aeroguard
 
 [ Start Training ]
 [ Scenario Library ]

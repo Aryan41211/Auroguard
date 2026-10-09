@@ -1,4 +1,4 @@
-# AEROVIGIL — Problem, Scope and Interpretation
+# Aeroguard — Problem, Scope and Interpretation
 
 ## 1. Problem statement in engineering terms
 
@@ -20,7 +20,7 @@ The system must support:
 
 ## 2. What the product is
 
-AEROVIGIL is best understood as:
+Aeroguard is best understood as:
 
 > A virtual training environment plus an assessment engine plus a personalized training loop.
 

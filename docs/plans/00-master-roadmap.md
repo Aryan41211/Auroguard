@@ -1,8 +1,8 @@
-# AEROVIGIL — Master Execution Plan (via OpenCode)
+# Aeroguard — Master Execution Plan (via OpenCode)
 
 > **For agentic workers:** Roadmap-of-plans. Each phase has its own code-level plan in `docs/plans/phase-N-*.md`, executed via superpowers:subagent-driven-development (fresh subagent per task, review per task, final whole-branch review).
 
-**Goal:** Build the full AEROVIGIL prototype — scenario → simulate → detect/classify/respond → score → AAR → adaptive loop — with a browser client first, Unity later (user decision, 2026-10-09).
+**Goal:** Build the full Aeroguard prototype — scenario → simulate → detect/classify/respond → score → AAR → adaptive loop — with a browser client first, Unity later (user decision, 2026-10-09).
 
 **Architecture:** FastAPI + SQLite backend is the authority (scenario, scoring, AAR, adaptive); a Three.js/Vite browser client is the presentation layer; React dashboard for instructor/analytics. All communicate over `/api/v1` JSON per `docs/api/api_specification.md`.
 

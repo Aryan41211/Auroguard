@@ -1,4 +1,4 @@
-# AEROVIGIL — Scenario Engine
+# Aeroguard — Scenario Engine
 
 ## 1. Purpose
 

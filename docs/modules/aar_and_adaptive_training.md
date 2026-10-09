@@ -1,4 +1,4 @@
-# AEROVIGIL — AAR and Adaptive Training
+# Aeroguard — AAR and Adaptive Training
 
 ## 1. After Action Review
 

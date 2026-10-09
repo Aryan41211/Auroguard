@@ -310,7 +310,7 @@ git commit -m "feat(api): allow CORS from the Vite dev origin"
 
 ```json
 {
-  "name": "aerovigil-client",
+  "name": "aeroguard-client",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -378,7 +378,7 @@ export default defineConfig({
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AEROVIGIL</title>
+    <title>Aeroguard</title>
     <link rel="stylesheet" href="/src/styles.css" />
   </head>
   <body>
@@ -1126,7 +1126,7 @@ export function mountStartPanel(root: HTMLElement, onStart: (req: ScenarioGenera
   root.innerHTML = `
     <div id="start-panel" class="panel">
       <form id="start-form" style="min-width:320px">
-        <h2>AEROVIGIL</h2>
+        <h2>Aeroguard</h2>
         <label>Trainee ID <input id="trainee_id" value="TRAIN-001" /></label>
         <label>Difficulty <input id="difficulty" type="number" min="1" max="10" value="3" /></label>
         <label>Environment <select id="environment">${options(ENVIRONMENTS)}</select></label>
@@ -1508,7 +1508,7 @@ git commit -m "feat(client): add after action review scorecard and replay"
 - [ ] **Step 1: Write `client/README.md`**
 
 ```markdown
-# AEROVIGIL client (Phase 3 vertical slice)
+# Aeroguard client (Phase 3 vertical slice)
 
 ## Prerequisites
 - Node 20+ (developed on Node 22)

@@ -1,4 +1,4 @@
-# AEROVIGIL — System Architecture
+# Aeroguard — System Architecture
 
 ## 1. Components
 

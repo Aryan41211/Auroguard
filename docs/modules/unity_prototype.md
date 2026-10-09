@@ -1,4 +1,4 @@
-# AEROVIGIL — Unity Prototype Build
+# Aeroguard — Unity Prototype Build
 
 ## 1. Unity goal
 

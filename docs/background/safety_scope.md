@@ -1,8 +1,8 @@
-# AEROVIGIL — Safety and Scope
+# Aeroguard — Safety and Scope
 
 ## Purpose
 
-AEROVIGIL is a simulated training and assessment system.
+Aeroguard is a simulated training and assessment system.
 
 The engineering scope should remain focused on:
 
