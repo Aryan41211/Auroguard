@@ -225,3 +225,26 @@ def test_two_false_alarms_accumulate_ten_point_penalty(client, db_session) -> No
     assert row is not None
     assert row.penalty == 10.0
     assert row.final_score == 0.0
+
+
+def test_complete_returns_score_breakdown(client) -> None:
+    scenario_id = _create_scenario(client)
+    session_id = client.post(
+        "/api/v1/sessions",
+        json={"trainee_id": "TRAIN-001", "scenario_id": scenario_id},
+    ).json()["session_id"]
+    response = client.post(f"/api/v1/sessions/{session_id}/complete")
+    assert response.status_code == 200
+    body = response.json()
+    for key in (
+        "detection_score",
+        "classification_score",
+        "response_score",
+        "timing_score",
+        "penalty",
+        "final_score",
+        "scoring_version",
+    ):
+        assert key in body, key
+    assert body["detection_score"] == 0.0
+    assert body["final_score"] == 0.0

@@ -76,8 +76,14 @@ Response:
 ```json
 {
   "session_id": "SES-1001",
-  "final_score": 87,
-  "aar_available": true
+  "detection_score": 30.0,
+  "classification_score": 30.0,
+  "response_score": 25.0,
+  "timing_score": 15.0,
+  "penalty": 0.0,
+  "final_score": 100.0,
+  "aar_available": true,
+  "scoring_version": 1
 }
 ```
 

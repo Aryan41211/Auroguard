@@ -114,6 +114,11 @@ def complete_session(
     if existing is not None:
         return CompleteResponse(
             session_id=session_id,
+            detection_score=existing.detection_score,
+            classification_score=existing.classification_score,
+            response_score=existing.response_score,
+            timing_score=existing.timing_score,
+            penalty=existing.penalty,
             final_score=existing.final_score,
             aar_available=True,
             scoring_version=existing.scoring_version,
@@ -152,6 +157,11 @@ def complete_session(
 
     return CompleteResponse(
         session_id=session_id,
+        detection_score=result.detection_score,
+        classification_score=result.classification_score,
+        response_score=result.response_score,
+        timing_score=result.timing_score,
+        penalty=result.penalty,
         final_score=result.final_score,
         aar_available=True,
         scoring_version=result.scoring_version,

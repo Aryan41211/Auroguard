@@ -23,6 +23,11 @@ class SessionCreated(BaseModel):
 
 class CompleteResponse(BaseModel):
     session_id: str
+    detection_score: float = Field(ge=0, le=100)
+    classification_score: float = Field(ge=0, le=100)
+    response_score: float = Field(ge=0, le=100)
+    timing_score: float = Field(ge=0, le=100)
+    penalty: float = Field(ge=0)
     final_score: float = Field(ge=0, le=100)
     aar_available: bool
     scoring_version: int

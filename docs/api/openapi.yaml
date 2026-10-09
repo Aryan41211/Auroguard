@@ -290,10 +290,29 @@ components:
           type: boolean
     CompleteResponse:
       type: object
-      required: [session_id, final_score, aar_available, scoring_version]
+      required: [session_id, detection_score, classification_score, response_score, timing_score, penalty, final_score, aar_available, scoring_version]
       properties:
         session_id:
           type: string
+        detection_score:
+          type: number
+          minimum: 0
+          maximum: 100
+        classification_score:
+          type: number
+          minimum: 0
+          maximum: 100
+        response_score:
+          type: number
+          minimum: 0
+          maximum: 100
+        timing_score:
+          type: number
+          minimum: 0
+          maximum: 100
+        penalty:
+          type: number
+          minimum: 0
         final_score:
           type: number
           minimum: 0
