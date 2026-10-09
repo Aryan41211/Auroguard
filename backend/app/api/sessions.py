@@ -4,15 +4,27 @@ from __future__ import annotations
 
 import json
 import uuid
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
-from app.db.models import EventRow, ScenarioRow, SessionRow
+from app.db.models import (
+    EventRow,
+    ScenarioRow,
+    ScoreRow,
+    SessionRow,
+    event_row_to_request,
+)
 from app.schemas.events import EventCreateRequest, EventCreated
-from app.schemas.session import SessionCreateRequest, SessionCreated
+from app.schemas.session import (
+    CompleteResponse,
+    SessionCreateRequest,
+    SessionCreated,
+)
+from app.services.scoring import score
 
 router = APIRouter(tags=["sessions"])
 
@@ -90,3 +102,59 @@ def submit_event(
         return EventCreated(event_id=event.event_id, accepted=True)
 
     raise RuntimeError("unreachable: event_id allocation exhausted")
+
+
+@router.post("/sessions/{session_id}/complete", response_model=CompleteResponse)
+def complete_session(
+    session_id: str, db: Session = Depends(get_db)
+) -> CompleteResponse:
+    session = db.get(SessionRow, session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail=f"unknown session_id: {session_id}")
+
+    existing = db.get(ScoreRow, session_id)
+    if existing is not None:
+        return CompleteResponse(
+            session_id=session_id,
+            final_score=existing.final_score,
+            aar_available=True,
+            scoring_version=existing.scoring_version,
+        )
+
+    scenario_row = db.get(ScenarioRow, session.scenario_id)
+    if scenario_row is None:
+        raise HTTPException(
+            status_code=404, detail=f"unknown scenario_id: {session.scenario_id}"
+        )
+    event_rows = (
+        db.query(EventRow)
+        .filter(EventRow.session_id == session_id)
+        .order_by(EventRow.timestamp_ms, EventRow.event_id)
+        .all()
+    )
+    events = [event_row_to_request(row) for row in event_rows]
+    result = score(session_id, scenario_row.to_schema(), events)
+
+    db.add(
+        ScoreRow(
+            session_id=session_id,
+            detection_score=result.detection_score,
+            classification_score=result.classification_score,
+            response_score=result.response_score,
+            timing_score=result.timing_score,
+            penalty=result.penalty,
+            final_score=result.final_score,
+            scoring_version=result.scoring_version,
+        )
+    )
+    session.status = "completed"
+    session.completed_at = datetime.now()
+    session.final_score = result.final_score
+    db.commit()
+
+    return CompleteResponse(
+        session_id=session_id,
+        final_score=result.final_score,
+        aar_available=True,
+        scoring_version=result.scoring_version,
+    )
