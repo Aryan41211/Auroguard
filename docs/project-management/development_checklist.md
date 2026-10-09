@@ -14,10 +14,10 @@
 
 - [x] Scenario model
 - [x] Threat model
-- [ ] Session model
-- [ ] Event model
-- [ ] Score model
-- [ ] Performance profile
+- [x] Session model
+- [x] Event model
+- [x] Score model
+- [x] Performance profile
 
 ## Scenario engine
 
@@ -49,22 +49,22 @@
 ## Backend
 
 - [x] Scenario endpoint
-- [ ] Session endpoint
-- [ ] Event endpoint
-- [ ] Complete-session endpoint
+- [x] Session endpoint
+- [x] Event endpoint
+- [x] Complete-session endpoint
 - [ ] AAR endpoint
 - [ ] Performance endpoint
 - [ ] Recommendation endpoint
 
 ## Scoring
 
-- [ ] Detection score
-- [ ] Classification score
-- [ ] Response score
-- [ ] Timing score
-- [ ] Penalties
-- [ ] Final score
-- [ ] Unit tests
+- [x] Detection score
+- [x] Classification score
+- [x] Response score
+- [x] Timing score
+- [x] Penalties
+- [x] Final score
+- [x] Unit tests
 
 ## AAR
 
