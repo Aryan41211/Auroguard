@@ -1,19 +1,4 @@
-import pytest
-from fastapi.testclient import TestClient
-
-from app.main import app
-
-client = TestClient(app)
-
-
-@pytest.fixture(autouse=True)
-def _reset_recent_configs() -> None:
-    app.state.recent_configs.clear()
-    yield
-    app.state.recent_configs.clear()
-
-
-def test_generate_returns_contract_shaped_scenario() -> None:
+def test_generate_returns_contract_shaped_scenario(client) -> None:
     response = client.post(
         "/api/v1/scenarios/generate",
         json={
@@ -33,7 +18,7 @@ def test_generate_returns_contract_shaped_scenario() -> None:
     assert len(body["threats"]) == 2
 
 
-def test_generate_is_deterministic_for_same_seed() -> None:
+def test_generate_is_deterministic_for_same_seed(client) -> None:
     payload = {
         "difficulty": 6,
         "environment": "urban",
@@ -46,7 +31,7 @@ def test_generate_is_deterministic_for_same_seed() -> None:
     assert first == second
 
 
-def test_generate_without_seed_returns_scenario() -> None:
+def test_generate_without_seed_returns_scenario(client) -> None:
     response = client.post(
         "/api/v1/scenarios/generate",
         json={"difficulty": 6, "environment": "rural", "time_of_day": "day", "threat_count": 1},
@@ -55,7 +40,7 @@ def test_generate_without_seed_returns_scenario() -> None:
     assert response.json()["seed"] is not None
 
 
-def test_generate_rejects_infeasible_configuration() -> None:
+def test_generate_rejects_infeasible_configuration(client) -> None:
     response = client.post(
         "/api/v1/scenarios/generate",
         json={
@@ -68,7 +53,7 @@ def test_generate_rejects_infeasible_configuration() -> None:
     assert response.status_code == 422
 
 
-def test_generate_rejects_invalid_threat_count() -> None:
+def test_generate_rejects_invalid_threat_count(client) -> None:
     response = client.post(
         "/api/v1/scenarios/generate",
         json={"difficulty": 5, "environment": "urban", "time_of_day": "day", "threat_count": 4},

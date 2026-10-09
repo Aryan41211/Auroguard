@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy.orm import Session
 
+from app.db.database import get_db
+from app.db.models import ScenarioRow
 from app.schemas.scenario import Scenario, ScenarioGenerateRequest
 from app.services.anti_repetition import (
     RecentConfigTracker,
@@ -17,7 +20,9 @@ router = APIRouter(tags=["scenarios"])
 
 @router.post("/scenarios/generate", response_model=Scenario)
 def generate_scenario_route(
-    body: ScenarioGenerateRequest, request: Request
+    body: ScenarioGenerateRequest,
+    request: Request,
+    db: Session = Depends(get_db),
 ) -> Scenario:
     tracker: RecentConfigTracker = request.app.state.recent_configs
     try:
@@ -25,4 +30,8 @@ def generate_scenario_route(
         validate_scenario(scenario)
     except (InfeasibleScenarioError, ScenarioValidationError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    if db.get(ScenarioRow, scenario.scenario_id) is None:
+        db.add(ScenarioRow.from_schema(scenario))
+        db.commit()
     return scenario
