@@ -34,17 +34,20 @@
 
 ## Unity
 
-- [ ] Main scene
-- [ ] Camera
-- [ ] Environment
-- [ ] Threat prefab
-- [ ] Threat movement
-- [ ] Scenario loader
-- [ ] Detection UI
-- [ ] Classification UI
-- [ ] Response UI
-- [ ] Timer
-- [ ] Session completion
+> Delivered for the Phase 3 vertical slice by the browser Three.js client
+> (`client/`); the Unity implementation is deferred to the optional Phase 8.
+
+- [x] Main scene
+- [x] Camera
+- [x] Environment
+- [x] Threat prefab
+- [x] Threat movement
+- [x] Scenario loader
+- [x] Detection UI
+- [x] Classification UI
+- [x] Response UI
+- [x] Timer
+- [x] Session completion
 
 ## Backend
 
