@@ -88,3 +88,30 @@ def test_submit_event_invalid_type_returns_422(client) -> None:
         json={"type": "NOT_A_TYPE", "timestamp_ms": 1000},
     )
     assert response.status_code == 422
+
+
+def test_event_ids_are_globally_unique_across_sessions(client) -> None:
+    scenario_id = _create_scenario(client)
+    first_session = client.post(
+        "/api/v1/sessions",
+        json={"trainee_id": "TRAIN-001", "scenario_id": scenario_id},
+    ).json()["session_id"]
+    second_session = client.post(
+        "/api/v1/sessions",
+        json={"trainee_id": "TRAIN-002", "scenario_id": scenario_id},
+    ).json()["session_id"]
+
+    first_event = client.post(
+        f"/api/v1/sessions/{first_session}/events",
+        json={"type": "THREAT_DETECTED", "timestamp_ms": 1000, "threat_id": "T01"},
+    )
+    second_event = client.post(
+        f"/api/v1/sessions/{second_session}/events",
+        json={"type": "THREAT_DETECTED", "timestamp_ms": 2000, "threat_id": "T01"},
+    )
+
+    assert first_event.status_code == 201
+    assert second_event.status_code == 201
+    assert first_event.json() == {"event_id": "EVT-001", "accepted": True}
+    assert second_event.json() == {"event_id": "EVT-002", "accepted": True}
+    assert first_event.json()["event_id"] != second_event.json()["event_id"]

@@ -6,6 +6,7 @@ import json
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
@@ -15,9 +16,15 @@ from app.schemas.session import SessionCreateRequest, SessionCreated
 
 router = APIRouter(tags=["sessions"])
 
+_EVENT_ID_MAX_ATTEMPTS = 3
+
 
 def _new_session_id() -> str:
     return f"SES-{uuid.uuid4().hex[:8].upper()}"
+
+
+def _next_event_id(db: Session) -> str:
+    return f"EVT-{db.query(EventRow).count() + 1:03d}"
 
 
 def _threat_ids(scenario: ScenarioRow) -> set[str]:
@@ -63,17 +70,23 @@ def submit_event(
                 status_code=422, detail=f"unknown threat_id: {body.threat_id}"
             )
 
-    count = (
-        db.query(EventRow).filter(EventRow.session_id == session_id).count()
-    )
-    event = EventRow(
-        event_id=f"EVT-{count + 1:03d}",
-        session_id=session_id,
-        timestamp_ms=body.timestamp_ms,
-        type=body.type.value,
-        threat_id=body.threat_id,
-        payload_json=json.dumps(body.payload),
-    )
-    db.add(event)
-    db.commit()
-    return EventCreated(event_id=event.event_id, accepted=True)
+    for attempt in range(_EVENT_ID_MAX_ATTEMPTS):
+        event = EventRow(
+            event_id=_next_event_id(db),
+            session_id=session_id,
+            timestamp_ms=body.timestamp_ms,
+            type=body.type.value,
+            threat_id=body.threat_id,
+            payload_json=json.dumps(body.payload),
+        )
+        db.add(event)
+        try:
+            db.commit()
+        except IntegrityError:
+            db.rollback()
+            if attempt == _EVENT_ID_MAX_ATTEMPTS - 1:
+                raise
+            continue
+        return EventCreated(event_id=event.event_id, accepted=True)
+
+    raise RuntimeError("unreachable: event_id allocation exhausted")
