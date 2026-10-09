@@ -1,8 +1,16 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
 
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def _reset_recent_configs() -> None:
+    app.state.recent_configs.clear()
+    yield
+    app.state.recent_configs.clear()
 
 
 def test_generate_returns_contract_shaped_scenario() -> None:

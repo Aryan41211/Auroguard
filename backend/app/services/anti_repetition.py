@@ -9,6 +9,7 @@ configuration is outside the recent window.
 from __future__ import annotations
 
 import random
+import threading
 from collections import deque
 
 from app.schemas.scenario import Scenario, ScenarioGenerateRequest
@@ -24,6 +25,7 @@ class RecentConfigTracker:
 
     def __init__(self, capacity: int = DEFAULT_CAPACITY) -> None:
         self._recent: deque[tuple] = deque(maxlen=capacity)
+        self._lock = threading.RLock()
 
     @staticmethod
     def signature(scenario: Scenario) -> tuple:
@@ -38,13 +40,16 @@ class RecentConfigTracker:
         )
 
     def is_recent(self, scenario: Scenario) -> bool:
-        return self.signature(scenario) in self._recent
+        with self._lock:
+            return self.signature(scenario) in self._recent
 
     def record(self, scenario: Scenario) -> None:
-        self._recent.append(self.signature(scenario))
+        with self._lock:
+            self._recent.append(self.signature(scenario))
 
     def clear(self) -> None:
-        self._recent.clear()
+        with self._lock:
+            self._recent.clear()
 
 
 def _fresh_seed(rng: random.Random) -> int:
@@ -58,19 +63,20 @@ def generate_with_anti_repetition(
     max_attempts: int = DEFAULT_MAX_ATTEMPTS,
     seed_source: random.Random | None = None,
 ) -> Scenario:
-    if request.seed is not None:
-        scenario = generate_scenario(request, request.seed)
-        tracker.record(scenario)
-        return scenario
+    with tracker._lock:
+        if request.seed is not None:
+            scenario = generate_scenario(request, request.seed)
+            tracker.record(scenario)
+            return scenario
 
-    rng = seed_source or random.Random()
-    last: Scenario | None = None
-    for _ in range(max(1, max_attempts)):
-        last = generate_scenario(request, _fresh_seed(rng))
-        if not tracker.is_recent(last):
-            tracker.record(last)
-            return last
+        rng = seed_source or random.Random()
+        last: Scenario | None = None
+        for _ in range(max(1, max_attempts)):
+            last = generate_scenario(request, _fresh_seed(rng))
+            if not tracker.is_recent(last):
+                tracker.record(last)
+                return last
 
-    assert last is not None  # the loop runs at least once
-    tracker.record(last)
-    return last
+        assert last is not None  # the loop runs at least once
+        tracker.record(last)
+        return last
