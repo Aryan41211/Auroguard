@@ -5,14 +5,17 @@ import { App } from "./App";
 import { createFakeApi } from "./test/fakeApi";
 
 describe("App", () => {
-  it("shows the history view by default", () => {
+  it("shows the history view by default", async () => {
     render(<App api={createFakeApi()} />);
     expect(screen.getByRole("heading", { name: "Session history" })).toBeInTheDocument();
+    // Let the history fetch settle so no state update leaks past the test.
+    expect(await screen.findByText(/No sessions yet/)).toBeInTheDocument();
   });
 
   it("switches the active section when a tab is clicked", async () => {
     const user = userEvent.setup();
     render(<App api={createFakeApi()} />);
+    await screen.findByText(/No sessions yet/);
 
     await user.click(screen.getByRole("button", { name: "Trends" }));
 
