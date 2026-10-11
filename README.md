@@ -1,26 +1,59 @@
+<div align="center">
+
 # Aeroguard
 
-**AI-Enabled Drone & Counter-Drone Threat Simulation Trainer** — a software
-training platform where personnel repeatedly practice *detecting*, *classifying*
-and *choosing an abstract response* for simulated aerial threats under varied
-environmental and sensor conditions, then review objective scores and follow a
-personalised, explainable training loop.
+### AI-Enabled Drone & Counter-Drone Threat Simulation Trainer
 
-Aeroguard is a **training and assessment prototype**, not an operational
-counter-drone system. The simulator is only one part of the product; the full
-system is:
+*Simulate the airspace. Sharpen the judgement. Measure the response.*
 
-```
-Simulation  +  Interaction  +  Event Logging  +  Scoring  +  AAR  +  Adaptive Training
-```
+A deterministic, offline-first training platform where personnel practise
+**detecting, classifying and responding** to simulated aerial threats — then
+review objective scores and follow an explainable, personalised training loop.
+
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.143-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Three.js](https://img.shields.io/badge/Three.js-r169-000000?logo=three.js&logoColor=white)](https://threejs.org/)
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+
+![Tests](https://img.shields.io/badge/tests-161%20backend%20%C2%B7%2030%20client%20%C2%B7%2040%20dashboard-brightgreen)
+![Offline first](https://img.shields.io/badge/offline--first-localhost-blueviolet)
+![Status](https://img.shields.io/badge/status-Phase%206%20complete-success)
+
+</div>
 
 ---
+
+> **In one line:** a virtual training environment, an objective assessment
+> engine, and a personalised training loop — the simulator is only one part of
+> the system.
+>
+> ```
+> Simulation  +  Interaction  +  Event Logging  +  Scoring  +  AAR  +  Adaptive Training
+> ```
+
+## Why it's interesting
+
+- **Deterministic by construction** — the same seed always produces the same
+  scenario, and the same event log always produces the same score. Exercises are
+  reproducible, debuggable and auditable.
+- **Server-authoritative scoring** — clients only report *what happened*; the
+  backend derives *how well*. No client can inflate a score.
+- **Graphics-independent training logic** — a threat drawn as a sphere and one
+  drawn as a hi-fi model are scored identically, so the simulation can evolve
+  without touching the assessment.
+- **Explainable adaptation** — every recommendation cites the metrics behind it
+  ("night score trails overall by 21 points…"), never a black box.
+- **Fully offline** — the entire loop runs on `localhost` with SQLite; no cloud,
+  no telemetry, no internet dependency for the core experience.
 
 ## Table of contents
 
 - [What it does](#what-it-does)
+- [A session, end to end](#a-session-end-to-end)
 - [Screens & users](#screens--users)
 - [Architecture](#architecture)
+- [Design principles](#design-principles)
 - [Tech stack](#tech-stack)
 - [Repository layout](#repository-layout)
 - [Getting started](#getting-started)
@@ -31,47 +64,42 @@ Simulation  +  Interaction  +  Event Logging  +  Scoring  +  AAR  +  Adaptive Tr
 - [Scope & safety](#scope--safety)
 - [Status](#status)
 
----
-
 ## What it does
 
-1. **Generate a scenario** — procedural, seeded generator produces a
-   reproducible scenario with difficulty, environment (urban/rural),
-   time of day (day/night), visibility tier, sensor quality and a threat count
-   of 1/2/3/5. The same seed always yields the same scenario.
-2. **Play it** — a browser client (Three.js) renders the scene and threat
-   movement; the trainee clicks **Detect → Classify → Respond** per threat, can
-   raise a **false alarm**, and finishes the session.
-3. **Score it** — the backend replays the recorded event log and computes a
-   deterministic 0–100 score plus timing and mistake analysis. The client never
-   scores; the server is the single authority.
-4. **Review it (AAR)** — an After-Action Review with summary, scores, timing
-   metrics, mistakes, strengths, weaknesses and a recommendation. A
-   deterministic template narrator is used offline; an optional
-   OpenAI-compatible LLM narrator can be enabled.
-5. **Adapt** — performance is aggregated per trainee across conditions
-   (day/night, environment, visibility, sensor bins, multi-threat) and a
-   rule-based recommender proposes the next scenario with a metric-cited reason.
-6. **Instruct & analyse** — a React dashboard provides session history, score
-   trends, a weakness heatmap, a trainee-performance view and an instructor
-   scenario builder whose **Play** link opens a ready-to-start scenario.
+| Step | What happens |
+|---|---|
+| **Generate** | The seeded generator produces a scenario: difficulty, environment (urban/rural), time of day, visibility tier, sensor quality and a threat count of 1/2/3/5. |
+| **Play** | A Three.js browser client renders the scene; the trainee clicks **Detect → Classify → Respond** per threat, can raise a **false alarm**, and finishes. |
+| **Score** | The backend replays the event log and computes a deterministic 0–100 score with timing and mistake analysis. |
+| **Review** | An After-Action Review surfaces summary, scores, timing, mistakes, strengths, weaknesses and a recommendation. |
+| **Adapt** | Performance is aggregated per condition and a rule-based recommender proposes the next scenario with its reasoning. |
+| **Instruct** | A React dashboard offers history, trends, a weakness heatmap, per-trainee performance and an instructor scenario builder. |
 
-Deterministic, offline-first and explainable by design: no cloud, no
-nondeterministic scoring, and the training logic is independent of the graphics
-(a sphere and a hi-fi model score identically).
+## A session, end to end
+
+```text
+  seed ──▶ generate ──▶ play ──▶ events ──▶ score ──▶ AAR ──▶ recommend ──▶ next scenario
+   │                    │          │                                            ▲
+   └──── identical ─────┘          └────────── identical ───────────────────────┘
+        scenario                        score
+```
+
+The instructor can hand a trainee a **Play link** that opens a scenario
+identically to how it was generated — same conditions, same seed — so a planned
+exercise and its replay are always the same exercise.
 
 ## Screens & users
 
-- **Trainee** — runs scenarios and reviews their AAR.
-- **Instructor** — builds/seeds scenarios, inspects trainee performance, spots
-  recurring weaknesses, and reviews session history.
-- **Unit/admin** — aggregate performance without unnecessary personal data.
+- **Trainee** — runs scenarios and reviews their After-Action Review.
+- **Instructor** — builds and seeds scenarios, inspects trainee performance,
+  spots recurring weaknesses, and reviews session history.
+- **Unit / admin** — reads aggregate performance without unnecessary personal data.
 
 | Surface | Port | Purpose |
 |---|---|---|
-| Browser simulator client | 5173 | Play a scenario, detect/classify/respond, view the AAR |
-| Instructor dashboard | 5174 | History, trends, weakness heatmap, performance, scenario builder |
-| FastAPI backend | 8000 | Scenario, scoring, storage, AAR, adaptive logic (`/docs` for Swagger) |
+| Browser simulator client | `5173` | Play a scenario, detect/classify/respond, view the AAR |
+| Instructor dashboard | `5174` | History, trends, weakness heatmap, performance, scenario builder |
+| FastAPI backend | `8000` | Scenario, scoring, storage, AAR and adaptive logic (`/docs` for Swagger) |
 
 ## Architecture
 
@@ -79,8 +107,8 @@ nondeterministic scoring, and the training logic is independent of the graphics
         POST /api/v1/... (HTTP + JSON)
 ┌───────────────────┐        ┌───────────────────────┐        ┌─────────────────┐
 │  Browser client   │───────▶│    FastAPI backend    │───────▶│     SQLite      │
-│  (Vite + Three.js)│◀───────│  (authority: scoring, │◀───────│ scenarios       │
-│  play + AAR       │        │   AAR, adaptive)      │        │ sessions/events │
+│  (Vite + Three.js)│◀───────│  authority: scenario, │◀───────│ scenarios       │
+│  play + AAR       │        │  scoring, AAR, adapt  │        │ sessions/events │
 └───────────────────┘        └───────▲───────────────┘        │ scores          │
 ┌───────────────────┐                │                        │ perf profiles   │
 │  React dashboard  │────────────────┘                        └─────────────────┘
@@ -92,13 +120,24 @@ nondeterministic scoring, and the training logic is independent of the graphics
 scoring, AAR and adaptive logic. The clients send events and render results —
 they never compute scores.
 
+## Design principles
+
+| Principle | What it means here |
+|---|---|
+| **Deterministic** | Same seed + generator version ⇒ identical scenario; same events ⇒ identical score. Golden tests enforce it. |
+| **Server-authoritative** | The client never scores. The backend derives every number from the recorded event log. |
+| **Offline-first** | Everything runs on localhost over SQLite. No cloud, no external calls. |
+| **Explainable** | AARs and recommendations cite the exact metrics that produced them. |
+| **Graphics-independent** | Training logic never depends on visual appearance or 3D assets. |
+
 ## Tech stack
 
-- **Backend** — Python 3.12, FastAPI, Pydantic v2, SQLAlchemy 2, SQLite, pytest.
-- **Simulator client** — TypeScript, Vite 5, Three.js, Vitest.
-- **Dashboard** — React 18, TypeScript, Vite 5, Recharts, Vitest + Testing Library.
-- **Runtime** — Node 20+ (developed on Node 22); everything runs on localhost,
-  no internet required for the core loop.
+| Layer | Stack |
+|---|---|
+| Backend | Python 3.12 · FastAPI · Pydantic v2 · SQLAlchemy 2 · SQLite · pytest |
+| Simulator client | TypeScript · Vite 5 · Three.js · Vitest |
+| Dashboard | React 18 · TypeScript · Vite 5 · Recharts · Vitest + Testing Library |
+| Runtime | Node 20+ (developed on Node 22); localhost only |
 
 ## Repository layout
 
@@ -106,65 +145,62 @@ they never compute scores.
 Aeroguard/
 ├── backend/                 FastAPI app, services, db, tests, scripts/
 │   ├── app/
-│   │   ├── api/             scenarios, sessions, aar, training routers
+│   │   ├── api/             scenarios · sessions · aar · training routers
 │   │   ├── schemas/         pydantic request/response models
-│   │   ├── services/        scenario_generator, scoring, aar, adaptive, demo_seed
+│   │   ├── services/        scenario_generator · scoring · aar · adaptive · demo_seed
 │   │   └── db/              SQLAlchemy models + session
 │   ├── scripts/seed_demo.py deterministic demo-data CLI
-│   └── tests/               pytest suite (unit + contract + integration)
+│   └── tests/               pytest suite (unit · contract · integration)
 ├── client/                  Vite + TS + Three.js simulator (port 5173)
 ├── dashboard/               React + Recharts instructor app (port 5174)
-├── docs/                    engineering truth: background, modules, api, plans, guides
+├── docs/                    engineering truth: background · modules · api · plans · guides
 └── report.md                phase verification reports
 ```
 
 ## Getting started
 
-Prerequisites: **Python 3.11/3.12**, **Node 20+**, Git. (Unity is not required —
-the Phase 3 browser client replaced it for the vertical slice.)
+**Prerequisites:** Python 3.11/3.12, Node 20+, Git. (Unity is not required — the
+browser client covers the vertical slice.)
 
-### 1. Backend
+### 1 · Backend
 
 ```bash
 cd backend
 python -m venv .venv
-.venv/Scripts/activate        # Windows;  source .venv/bin/activate on Unix
+.venv/Scripts/activate            # Windows;  source .venv/bin/activate on Unix
 pip install -r requirements.txt
 .venv/Scripts/python -m uvicorn app.main:app --reload --port 8000
 ```
 
-- API docs: <http://127.0.0.1:8000/docs>
-- Config is env-overridable and all-optional; see `backend/.env.example`
+- Interactive API docs: <http://127.0.0.1:8000/docs>
+- All configuration is optional and env-overridable — see `backend/.env.example`
   (`AEROGUARD_DATABASE_URL`, plus optional LLM narrator settings).
 
-### 2. Demo data (optional but recommended for the dashboard)
+### 2 · Demo data *(recommended for the dashboard)*
 
 ```bash
 cd backend
 .venv/Scripts/python scripts/seed_demo.py --sessions 50
 ```
 
-Seeds ~50 deterministic synthetic sessions across six differentiated trainee
-profiles so trends and the weakness heatmap are meaningful.
+Seeds ~50 deterministic sessions across six differentiated trainee profiles so
+trends, comparisons and the weakness heatmap are meaningful.
 
-### 3. Simulator client
+### 3 · Simulator client
 
 ```bash
 cd client
 npm install
-npm run dev            # http://localhost:5173  (proxies /api -> :8000)
+npm run dev                        # http://localhost:5173  (proxies /api → :8000)
 ```
 
-### 4. Instructor dashboard
+### 4 · Instructor dashboard
 
 ```bash
 cd dashboard
 npm install
-npm run dev            # http://localhost:5174  (proxies /api -> :8000)
+npm run dev                        # http://localhost:5174  (proxies /api → :8000)
 ```
-
-The dashboard's instructor builder emits a **Play in simulator** link that opens
-the client at 5173 prefilled with the exact scenario conditions and seed.
 
 ## API
 
@@ -186,7 +222,7 @@ the human-readable companion.
 
 ## Scoring model
 
-A deterministic 100-point score computed server-side from the recorded events:
+A deterministic 100-point score, computed server-side from the recorded events:
 
 | Component | Max | Notes |
 |---|---|---|
@@ -196,56 +232,60 @@ A deterministic 100-point score computed server-side from the recorded events:
 | Timing | 15 | response-time curve (target + tolerance) |
 | Penalties | — | e.g. false alarms |
 
-The score is a training signal, not a scientifically validated operational
-metric. See `docs/modules/scoring_engine.md`.
+It is a *training signal*, not a scientifically validated operational metric.
+See `docs/modules/scoring_engine.md`.
 
 ## Testing
 
 ```bash
-# Backend (161 tests)
+# Backend — 161 tests
 cd backend && .venv/Scripts/python -m pytest tests -q
 
-# Simulator client (typecheck + 30 unit tests + build)
+# Simulator client — typecheck + 30 unit tests + build
 cd client && npm run typecheck && npm test && npm run build
 
-# Dashboard (typecheck + 40 unit tests + build)
+# Dashboard — typecheck + 40 unit tests + build
 cd dashboard && npm run typecheck && npm test && npm run build
 ```
 
-Golden tests enforce scenario determinism; contract tests keep the OpenAPI
-spec, the routers and the docs in sync.
+Golden tests enforce scenario determinism; contract tests keep the OpenAPI spec,
+the routers and the docs in sync.
 
 ## Documentation
 
-Start at `docs/guides/start_here.md`, then:
+Start at `docs/guides/start_here.md`, then explore:
 
-- **Background** — `docs/background/problem_and_scope.md`, `safety_scope.md`
-- **Modules** — `docs/modules/` (architecture, scenario engine, scoring, event
-  model, AAR & adaptive training, FastAPI backend, UI/UX)
-- **API** — `docs/api/api_specification.md`, `docs/api/openapi.yaml`
-- **Guides** — `docs/guides/` (local setup, testing & validation, project structure)
-- **Plans** — `docs/plans/00-master-roadmap.md` and per-phase plans
-- **Project management** — `docs/project-management/` (requirements, decisions,
-  checklist, git workflow, demo validation, troubleshooting)
+| Area | Where |
+|---|---|
+| Background | `docs/background/problem_and_scope.md`, `safety_scope.md` |
+| Modules | `docs/modules/` — architecture, scenario engine, scoring, event model, AAR & adaptive training, FastAPI backend, UI/UX |
+| API | `docs/api/api_specification.md`, `docs/api/openapi.yaml` |
+| Guides | `docs/guides/` — local setup, testing & validation, project structure |
+| Plans | `docs/plans/00-master-roadmap.md` and per-phase plans |
+| Project management | `docs/project-management/` — requirements, decisions, checklist, git workflow, demo validation, troubleshooting |
 
 ## Scope & safety
 
 Aeroguard is explicitly **not** a physical anti-drone system, a
-command-and-control platform, a weapon-targeting system, an interception system
+command-and-control platform, a weapon-targeting system, an interception system,
 or a replacement for live operational training. Responses are **abstract
 categories only** — no targeting, engagement or real-drone logic. See
 `docs/background/safety_scope.md`.
 
 ## Status
 
-Phases 0–6 are complete: environment, scenario engine, scoring & sessions,
-browser client, AAR & adaptive training, content expansion, and the
-dashboard + instructor mode. **Phase 7** (deterministic replay with a timeline
-scrubber, sound/UI polish, a full demo-validation run, optional Docker) is next;
-**Phase 8** (optional Unity spike) is gated behind Phase 7. Progress is tracked
-in `docs/project-management/development_checklist.md` and
+**Phases 0–6 complete:** environment · scenario engine · scoring & sessions ·
+browser client · AAR & adaptive training · content expansion · dashboard &
+instructor mode.
+
+**Phase 7 next:** deterministic replay with a timeline scrubber, sound/UI polish,
+a full demo-validation run, and optional Docker. **Phase 8** (optional Unity
+spike) is gated behind Phase 7. Progress is tracked in
+`docs/project-management/development_checklist.md` and
 `docs/plans/00-master-roadmap.md`.
 
 ---
 
-_No license file is present yet; treat the code as all-rights-reserved until one is added._
+<div align="center">
+<sub>No license file is present yet — treat the code as all-rights-reserved until one is added.</sub>
+</div>
