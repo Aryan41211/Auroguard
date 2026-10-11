@@ -30,3 +30,15 @@ the scene, HUD, action buttons, and scorecard render as expected.
 
 Client unit tests: `cd client && npm test`
 Backend tests: `cd backend && .venv/Scripts/python -m pytest tests -q`
+
+## Running the Phase 6 dashboard (instructor + trainee)
+
+1. Backend: `cd backend && .venv/Scripts/python -m uvicorn app.main:app --reload --port 8000`
+2. Seed demo data (optional): `cd backend && .venv/Scripts/python scripts/seed_demo.py --sessions 50`
+3. Dashboard: `cd dashboard && npm install && npm run dev` -> open http://localhost:5174
+
+The dashboard reads only from `/api/v1` and never scores. Its instructor builder
+emits a **Play in simulator** link that prefills the client at
+http://localhost:5173 with the exact scenario conditions and seed.
+
+Dashboard tests: `cd dashboard && npm test`
