@@ -95,6 +95,19 @@
 - [x] Per-condition metrics on performance endpoint (urban/rural, visibility tiers, sensor bins)
 - [x] Condition-specific recommendation evidence
 
+## Dashboard + instructor mode (Phase 6)
+
+- [x] Session history endpoint (`GET /sessions`, optional `trainee_id` filter)
+- [x] Dashboard dev origin allowed in CORS (5174)
+- [x] Demo data seeder (`scripts/seed_demo.py`, 6 differentiated trainee profiles, ~50 sessions)
+- [x] Tabbed dashboard app (`dashboard/`, Vite + React + TS + Recharts, port 5174)
+- [x] Session history table with trainee filter
+- [x] Score trend line chart per trainee
+- [x] Weakness heatmap of condition scores (null buckets render `n/a`)
+- [x] Trainee performance view with one-click recommendation
+- [x] Instructor scenario builder with playable simulator link
+- [x] Simulator start-panel prefill from scenario query params
+
 ## Polish
 
 - [ ] Better assets
@@ -106,6 +119,6 @@
 
 ## Optional
 
-- [ ] React dashboard
+- [x] React dashboard
 - [ ] VR
 - [ ] advanced analytics
