@@ -18,7 +18,7 @@ function clear(): void {
 
 mountStartPanel(app, (request, traineeId) => {
   void runSession(request, traineeId);
-});
+}, window.location.search);
 
 async function runSession(
   request: Parameters<typeof api.generateScenario>[0],
@@ -115,7 +115,7 @@ function startPlay(scenario: Scenario, sessionId: string, traineeId: string): vo
     const { showAar } = await import("./ui/aar");
     showAar(app, scenario, result, decisions, () => {
       clear();
-      mountStartPanel(app, (nextRequest, nextTrainee) => { void runSession(nextRequest, nextTrainee); });
+      mountStartPanel(app, (nextRequest, nextTrainee) => { void runSession(nextRequest, nextTrainee); }, window.location.search);
     });
   }
 
