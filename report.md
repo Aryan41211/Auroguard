@@ -50,3 +50,26 @@ Yes, Phase 4 is genuinely complete.
 
 ## Exact Next Step in the Master Plan
 According to the project master plan, the next step is to begin Phase 5 (optional features such as React dashboard, VR, advanced analytics). However, per task instructions, Phase 5 is not to be started in this task.
+
+# Phase 6 Verification Report — Dashboard + instructor mode
+
+## Files Added and Changed
+- `dashboard/` (new subproject, Vite + React + TS + Recharts): scaffold, API client, tabbed shell, and five views (history, trends, weakness heatmap, trainee performance, instructor builder) with pure helpers and vitest coverage.
+- `client/src/ui/scenarioParams.ts` + `startPanel.ts`: validated query-param prefill for the instructor Play link.
+- `docs/project-management/development_checklist.md`: Phase 6 section marked complete.
+
+## Tests and Validation Commands with Actual Results
+- Backend: `backend/.venv/Scripts/python -m pytest -q` -> `161 passed`.
+- Client: `client && npm test` -> `30 passed`; `npm run build` green.
+- Dashboard: `dashboard && npm test` -> `40 passed`; `npm run typecheck` and `npm run build` green.
+
+## Live Evidence (seeded 50 sessions against a running server)
+```
+seed: 50/50 completed across 6 trainees; final_score min/mean/max 0.00/32.36/95.00
+GET /api/v1/sessions                 -> 50 entries (newest first)
+GET /api/v1/trainees/TRAIN-001/performance -> sessions=9, detection=38.52, classification=15.56, night=11.25, day=16.60, level=1
+```
+The throwaway `tmp_p6.db` was deleted after verification.
+
+## Remaining Issues or Blockers
+None. Phase 6 is complete; Phase 7 (replay, demo polish, deployment) is next.
