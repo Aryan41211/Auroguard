@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import { createApiClient } from "./api/client";
 import type { ClassificationLabel, ExpectedResponse, Scenario } from "./api/types";
+import { createSoundEngine, type SoundCue } from "./audio/sounds";
+import { createAutoPlay } from "./demo/autoPlay";
 import { mountReplayView } from "./replay/replayView";
 import { createSimScene } from "./sim/scene";
 import { Spawner } from "./sim/spawner";
@@ -10,10 +12,13 @@ import { mountActions } from "./ui/actions";
 import { showAar } from "./ui/aar";
 import { errorMessage, mountErrorPanel } from "./ui/errors";
 import { mountHud } from "./ui/hud";
+import { shortcutFor } from "./ui/shortcuts";
 import { mountStartPanel } from "./ui/startPanel";
 
 const api = createApiClient();
 const app = document.getElementById("app")!;
+const sounds = createSoundEngine();
+const cue = (name: SoundCue) => sounds.play(name);
 
 function clear(): void {
   app.innerHTML = "";
@@ -32,7 +37,14 @@ function replaySessionId(): string | null {
   return match ? match[1] : null;
 }
 
+/** Guided demo mode: `?demo=1` lets the scripted pilot play the session. */
+function demoMode(): boolean {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("demo") === "1";
+}
+
 function showError(error: unknown, onRetry?: () => void): void {
+  cue("error");
   clear();
   mountErrorPanel(app, errorMessage(error), {
     onRetry,
@@ -97,7 +109,12 @@ function startPlay(scenario: Scenario, sessionId: string, traineeId: string): vo
   }
 
   let selected: string | null = scenario.threats[0]?.id ?? null;
-  const hud = mountHud(app, scenario);
+  const hud = mountHud(app, scenario, {
+    onToggleSound: () => {
+      sounds.setEnabled(!sounds.isEnabled());
+      hud.setSoundEnabled(sounds.isEnabled());
+    },
+  });
 
   // Push per-threat stage changes (spawn/detect/classify/respond) into the HUD.
   let hudStageKey = "";
@@ -110,20 +127,67 @@ function startPlay(scenario: Scenario, sessionId: string, traineeId: string): vo
     }
   }
 
+  const autoPlay = demoMode()
+    ? createAutoPlay(scenario, {
+        onDetect: (id) => {
+          if (controller.detect(id)) cue("detect");
+        },
+        onClassify: (id, label) => {
+          if (controller.classify(id, label)) cue("classify");
+        },
+        onRespond: (id, response) => {
+          if (controller.respond(id, response)) cue("respond");
+        },
+        stepDelayMs: 1200,
+        mistakeMode: "last-threat",
+      })
+    : null;
+
   const spawner = new Spawner(scenario, (id) => {
     controller.spawnThreat(id);
+    cue("spawn");
     selected = id;
     hud.setSelected(id);
+    autoPlay?.onSpawn(id);
   });
   controller.start();
 
+  function detectCurrent(): void {
+    if (selected && controller.detect(selected)) cue("detect");
+  }
+  function classifyCurrent(label: ClassificationLabel): void {
+    if (selected && controller.classify(selected, label)) cue("classify");
+  }
+  function respondCurrent(response: ExpectedResponse): void {
+    if (selected && controller.respond(selected, response)) cue("respond");
+  }
+  function falseAlarm(): void {
+    controller.falseAlarm();
+    cue("false_alarm");
+  }
+
   const actions = mountActions(app, {
-    onDetect: () => { if (selected) controller.detect(selected); },
-    onClassify: (label: ClassificationLabel) => { if (selected) controller.classify(selected, label); },
-    onRespond: (response: ExpectedResponse) => { if (selected) controller.respond(selected, response); },
-    onFalseAlarm: () => controller.falseAlarm(),
+    onDetect: detectCurrent,
+    onClassify: classifyCurrent,
+    onRespond: respondCurrent,
+    onFalseAlarm: falseAlarm,
     onFinish: () => finish(),
   });
+
+  // Keyboard shortcuts mirror the on-screen buttons.
+  function onKey(event: KeyboardEvent): void {
+    const target = event.target as HTMLElement | null;
+    if (target && ["INPUT", "SELECT", "TEXTAREA"].includes(target.tagName)) return;
+    const action = shortcutFor(event.key);
+    if (!action) return;
+    event.preventDefault();
+    if (action.kind === "detect") detectCurrent();
+    if (action.kind === "classify") classifyCurrent(action.label);
+    if (action.kind === "respond") respondCurrent(action.response);
+    if (action.kind === "false_alarm") falseAlarm();
+    if (action.kind === "finish") void finish();
+  }
+  window.addEventListener("keydown", onKey);
 
   // Click a threat in the scene to select it.
   const raycaster = new THREE.Raycaster();
@@ -145,10 +209,21 @@ function startPlay(scenario: Scenario, sessionId: string, traineeId: string): vo
   async function finish(): Promise<void> {
     if (finishing) return;
     finishing = true;
+    autoPlay?.cancel();
     actions.setEnabled(false);
     controller.complete();
     await chain;
-    const result = await api.completeSession(sessionId);
+    let result;
+    try {
+      result = await api.completeSession(sessionId);
+    } catch (error) {
+      showError(error, () => {
+        void openReplay(sessionId);
+      });
+      return;
+    }
+    cue("complete");
+    window.removeEventListener("keydown", onKey);
     sim.dispose();
     const decisions = new Map(
       [...views.values()].map((v) => [v.profile.id, v.profile] as const),
