@@ -1,4 +1,4 @@
-# Aeroguard — Master TODO (Phase 7 completion)
+# Aeroguard - Master TODO (Phase 8 completion)
 
 Phases 0–6 are complete (see `docs/plans/00-master-roadmap.md`). This file tracks
 the remaining work to finish the project: **Phase 7 — replay, demo polish,
@@ -76,3 +76,13 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - [x] I2 Client: `npm run typecheck && npm test && npm run build` green
 - [x] I3 Dashboard: `npm run typecheck && npm test && npm run build` green
 - [x] I4 `git status` clean, commits pushed
+
+## J. Optional Unity spike (Phase 8)
+
+- [x] J1 Scaffold Unity 6000.6.5f1 project with built-in modules only
+- [x] J2 Runtime-built scene, API client, simulation loop and IMGUI HUD
+- [x] J3 Seeded session flow through completion and AAR
+- [x] J4 17 EditMode tests and a guarded live PlayMode integration test
+- [x] J5 Headless Configure/BuildWindows automation and Windows player build
+- [x] J6 Unity README and phase 8 plan/verification docs
+- [x] J7 git status clean, commits pushed
