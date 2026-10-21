@@ -1,6 +1,7 @@
 import { vi } from "vitest";
 import type { ApiClient } from "../api/client";
 import type {
+  ConditionsAnalyticsResponse,
   PerformanceProfile,
   RecommendResponse,
   Scenario,
@@ -106,17 +107,68 @@ export function sampleRecommendation(
   };
 }
 
+export function emptyConditionAnalytics(): ConditionsAnalyticsResponse {
+  return {
+    total_sessions: 0,
+    dimensions: [
+      { dimension: "environment", buckets: [] },
+      { dimension: "time_of_day", buckets: [] },
+      { dimension: "visibility", buckets: [] },
+    ],
+  };
+}
+
+export function sampleConditionAnalytics(
+  overrides: Partial<ConditionsAnalyticsResponse> = {},
+): ConditionsAnalyticsResponse {
+  return {
+    total_sessions: 3,
+    dimensions: [
+      {
+        dimension: "environment",
+        buckets: [
+          {
+            bucket: "urban",
+            session_count: 2,
+            mean_final_score: 85,
+            mean_detection_score: 25.5,
+            mean_classification_score: 25.5,
+            mean_response_score: 21.25,
+            mean_timing_score: 12.75,
+          },
+          {
+            bucket: "rural",
+            session_count: 1,
+            mean_final_score: 70,
+            mean_detection_score: 21,
+            mean_classification_score: 21,
+            mean_response_score: 17.5,
+            mean_timing_score: 10.5,
+          },
+        ],
+      },
+      { dimension: "time_of_day", buckets: [] },
+      { dimension: "visibility", buckets: [] },
+    ],
+    ...overrides,
+  };
+}
+
 export interface FakeApiOptions {
   sessions?: SessionHistoryResponse;
   performance?: PerformanceProfile;
   recommendation?: RecommendResponse;
   scenario?: Scenario;
+  conditionAnalytics?: ConditionsAnalyticsResponse;
 }
 
 export function createFakeApi(options: FakeApiOptions = {}): ApiClient {
   return {
     listSessions: vi.fn(async () => options.sessions ?? { sessions: [] }),
     getPerformance: vi.fn(async () => options.performance ?? emptyPerformance()),
+    getConditionAnalytics: vi.fn(
+      async () => options.conditionAnalytics ?? emptyConditionAnalytics(),
+    ),
     recommend: vi.fn(async () => options.recommendation ?? sampleRecommendation()),
     generateScenario: vi.fn(async () => options.scenario ?? sampleScenario()),
   };

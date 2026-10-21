@@ -13,6 +13,7 @@ EXPECTED_PATHS = {
     "/api/v1/sessions/{session_id}/replay",
     "/api/v1/trainees/{trainee_id}/performance",
     "/api/v1/training/recommend",
+    "/api/v1/analytics/conditions",
 }
 
 EXPECTED_SCHEMAS = {
@@ -37,6 +38,9 @@ EXPECTED_SCHEMAS = {
     "ReplayFrame",
     "ReplayResponse",
     "ReplayThreatState",
+    "ConditionBucketMetrics",
+    "ConditionDimension",
+    "ConditionsAnalyticsResponse",
 }
 
 
