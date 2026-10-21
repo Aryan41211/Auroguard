@@ -51,5 +51,18 @@ describe("createApiClient", () => {
     const api = createApiClient("/api/v1", fetchFn as unknown as typeof fetch);
     await expect(api.completeSession("SES-X")).rejects.toThrow(/404.*unknown session_id/);
   });
+
+  it("GETs the replay of a session", async () => {
+    const replay = { session_id: "SES-1", frames: [], events: [] };
+    const fetchFn = vi.fn().mockResolvedValue(jsonResponse(replay));
+    const api = createApiClient("/api/v1", fetchFn as unknown as typeof fetch);
+
+    const result = await api.getReplay("SES-1");
+
+    expect(result).toEqual(replay);
+    const [url, init] = fetchFn.mock.calls[0];
+    expect(url).toBe("/api/v1/sessions/SES-1/replay");
+    expect(init.method).toBe("GET");
+  });
 });
 

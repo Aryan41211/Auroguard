@@ -54,7 +54,7 @@ export interface EventCreateRequest {
 }
 export interface EventCreated { event_id: string; accepted: boolean; }
 
-export interface CompleteResponse {
+export interface ScoreResult {
   session_id: string;
   detection_score: number;
   classification_score: number;
@@ -62,7 +62,48 @@ export interface CompleteResponse {
   timing_score: number;
   penalty: number;
   final_score: number;
-  aar_available: boolean;
   scoring_version: number;
+}
+
+export interface CompleteResponse extends ScoreResult {
+  aar_available: boolean;
+}
+
+export type ReplayStage =
+  | "pending" | "spawned" | "detected" | "classified" | "responded" | "missed";
+
+export interface ReplayEvent {
+  event_id: string;
+  type: EventType;
+  timestamp_ms: number;
+  threat_id?: string | null;
+  payload: Record<string, unknown>;
+}
+
+export interface ReplayThreatState {
+  threat_id: string;
+  stage: ReplayStage;
+  detected: boolean;
+  classification?: string | null;
+  response?: string | null;
+}
+
+export interface ReplayFrame {
+  timestamp_ms: number;
+  event_id: string;
+  event_type: EventType;
+  label: string;
+  threat_id?: string | null;
+  threats: ReplayThreatState[];
+}
+
+export interface ReplayResponse {
+  session_id: string;
+  trainee_id: string;
+  scenario: Scenario;
+  events: ReplayEvent[];
+  frames: ReplayFrame[];
+  score?: ScoreResult | null;
+  duration_ms: number;
 }
 
