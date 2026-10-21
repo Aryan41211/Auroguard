@@ -10,6 +10,7 @@ EXPECTED_PATHS = {
     "/api/v1/sessions/{session_id}/events",
     "/api/v1/sessions/{session_id}/complete",
     "/api/v1/sessions/{session_id}/aar",
+    "/api/v1/sessions/{session_id}/replay",
     "/api/v1/trainees/{trainee_id}/performance",
     "/api/v1/training/recommend",
 }
@@ -32,6 +33,10 @@ EXPECTED_SCHEMAS = {
     "RecommendResponse",
     "SessionHistoryEntry",
     "SessionHistoryResponse",
+    "ReplayEvent",
+    "ReplayFrame",
+    "ReplayResponse",
+    "ReplayThreatState",
 }
 
 

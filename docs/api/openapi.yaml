@@ -127,6 +127,29 @@ paths:
                 $ref: "#/components/schemas/AAR"
         "404":
           description: Session or AAR not found
+  /api/v1/sessions/{session_id}/replay:
+    get:
+      summary: Deterministic replay of a recorded session
+      description: >-
+        Replays the recorded event log. The server derives the per-threat state
+        at every recorded moment, so the same event log always yields the same
+        replay.
+      operationId: getReplay
+      parameters:
+        - name: session_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Replay payload (scenario, events, scrubber frames, score)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplayResponse"
+        "404":
+          description: Unknown session_id
   /api/v1/trainees/{trainee_id}/performance:
     get:
       summary: Historical aggregate performance for a trainee
@@ -554,3 +577,94 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/SessionHistoryEntry"
+    ReplayEvent:
+      type: object
+      required: [event_id, type, timestamp_ms]
+      properties:
+        event_id:
+          type: string
+        type:
+          type: string
+          enum:
+            - SESSION_STARTED
+            - SCENARIO_LOADED
+            - THREAT_SPAWNED
+            - THREAT_DETECTED
+            - CLASSIFICATION_SUBMITTED
+            - RESPONSE_SUBMITTED
+            - FALSE_ALARM
+            - THREAT_MISSED
+            - THREAT_RESOLVED
+            - SESSION_PAUSED
+            - SESSION_RESUMED
+            - SESSION_COMPLETED
+        timestamp_ms:
+          type: integer
+          minimum: 0
+        threat_id:
+          type: string
+          nullable: true
+        payload:
+          type: object
+          additionalProperties: true
+    ReplayThreatState:
+      type: object
+      required: [threat_id, stage]
+      properties:
+        threat_id:
+          type: string
+        stage:
+          type: string
+          enum: [pending, spawned, detected, classified, responded, missed]
+        detected:
+          type: boolean
+        classification:
+          type: string
+          nullable: true
+        response:
+          type: string
+          nullable: true
+    ReplayFrame:
+      type: object
+      required: [timestamp_ms, event_id, event_type, label, threats]
+      properties:
+        timestamp_ms:
+          type: integer
+          minimum: 0
+        event_id:
+          type: string
+        event_type:
+          type: string
+        label:
+          type: string
+        threat_id:
+          type: string
+          nullable: true
+        threats:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReplayThreatState"
+    ReplayResponse:
+      type: object
+      required: [session_id, trainee_id, scenario, events, frames, duration_ms]
+      properties:
+        session_id:
+          type: string
+        trainee_id:
+          type: string
+        scenario:
+          $ref: "#/components/schemas/Scenario"
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReplayEvent"
+        frames:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReplayFrame"
+        score:
+          $ref: "#/components/schemas/ScoreResult"
+          nullable: true
+        duration_ms:
+          type: integer
+          minimum: 0
