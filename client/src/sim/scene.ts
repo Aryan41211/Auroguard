@@ -31,6 +31,16 @@ export function createSimScene(container: HTMLElement, scenario: Scenario): SimS
   ground.rotation.x = -Math.PI / 2;
   scene.add(ground);
 
+  // Grid gives the eye a sense of scale and motion through the airspace.
+  const grid = new THREE.GridHelper(
+    300,
+    60,
+    night ? 0x223044 : 0x5a6b7a,
+    night ? 0x121a26 : 0x46535f,
+  );
+  grid.position.y = 0.05;
+  scene.add(grid);
+
   // Night uses a dimmer, cooler "moonlight"; day stays bright and neutral.
   const light = new THREE.DirectionalLight(
     night ? 0x9db4ff : 0xffffff,
@@ -39,6 +49,14 @@ export function createSimScene(container: HTMLElement, scenario: Scenario): SimS
   light.position.set(30, 60, 20);
   scene.add(light);
   scene.add(new THREE.AmbientLight(night ? 0x445577 : 0xffffff, night ? 0.35 : 0.6));
+  // Sky/ground bounce light: softens shadows without shadow-map cost.
+  scene.add(
+    new THREE.HemisphereLight(
+      night ? 0x2b3a55 : 0xcfe3ff,
+      night ? 0x0b0f14 : 0x3d5a3a,
+      night ? 0.5 : 0.7,
+    ),
+  );
 
   // Noise particles for reduced/poor visibility
   const particleCount = 100 + visibilityFactor * 150; // 100 for clear, 250 for reduced, 400 for poor
@@ -64,6 +82,26 @@ export function createSimScene(container: HTMLElement, scenario: Scenario): SimS
   const material = new THREE.PointsMaterial({ sizeAttenuation: true, vertexColors: true });
   const noiseParticles = new THREE.Points(geometry, material);
   scene.add(noiseParticles);
+
+  // Star field for night scenarios (pure decoration; never affects scoring).
+  let stars: THREE.Points | null = null;
+  if (night) {
+    const starCount = 500;
+    const starPositions = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount; i += 1) {
+      const i3 = i * 3;
+      starPositions[i3] = (Math.random() - 0.5) * 900;
+      starPositions[i3 + 1] = 70 + Math.random() * 180;
+      starPositions[i3 + 2] = (Math.random() - 0.5) * 900;
+    }
+    const starGeometry = new THREE.BufferGeometry();
+    starGeometry.setAttribute("position", new THREE.BufferAttribute(starPositions, 3));
+    stars = new THREE.Points(
+      starGeometry,
+      new THREE.PointsMaterial({ color: 0xdde8ff, size: 1.4, sizeAttenuation: false }),
+    );
+    scene.add(stars);
+  }
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -110,6 +148,12 @@ export function createSimScene(container: HTMLElement, scenario: Scenario): SimS
       renderer.domElement.remove();
       noiseParticles.geometry.dispose();
       noiseParticles.material.dispose();
+      grid.geometry.dispose();
+      (grid.material as THREE.Material).dispose();
+      if (stars) {
+        stars.geometry.dispose();
+        (stars.material as THREE.Material).dispose();
+      }
     },
   };
 }
