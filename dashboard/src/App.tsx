@@ -1,16 +1,24 @@
 import { useState } from "react";
 import { createApiClient, type ApiClient } from "./api/client";
+import { AnalyticsView } from "./views/AnalyticsView";
 import { HistoryView } from "./views/HistoryView";
 import { InstructorView } from "./views/InstructorView";
 import { PerformanceView } from "./views/PerformanceView";
 import { TrendsView } from "./views/TrendsView";
 import { WeaknessView } from "./views/WeaknessView";
 
-export type TabId = "history" | "trends" | "weakness" | "performance" | "instructor";
+export type TabId =
+  | "history"
+  | "trends"
+  | "analytics"
+  | "weakness"
+  | "performance"
+  | "instructor";
 
 const TABS: ReadonlyArray<{ id: TabId; label: string }> = [
   { id: "history", label: "History" },
   { id: "trends", label: "Trends" },
+  { id: "analytics", label: "Analytics" },
   { id: "weakness", label: "Weakness heatmap" },
   { id: "performance", label: "Trainee performance" },
   { id: "instructor", label: "Instructor builder" },
@@ -54,6 +62,7 @@ export function App({ api = createApiClient() }: AppProps = {}): JSX.Element {
       <div role="tabpanel">
         {active === "history" && <HistoryView api={api} traineeId={traineeId} />}
         {active === "trends" && <TrendsView api={api} traineeId={traineeId} />}
+        {active === "analytics" && <AnalyticsView api={api} traineeId={traineeId} />}
         {active === "weakness" && <WeaknessView api={api} traineeId={traineeId} />}
         {active === "performance" && <PerformanceView api={api} traineeId={traineeId} />}
         {active === "instructor" && <InstructorView api={api} traineeId={traineeId} />}
