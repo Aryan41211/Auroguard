@@ -4,7 +4,7 @@
 
 **Goal:** Build the full Aeroguard prototype — scenario → simulate → detect/classify/respond → score → AAR → adaptive loop — with a browser client first, Unity later (user decision, 2026-10-09).
 
-**Status (2026-10-21):** Phases 0–7 complete, including deterministic replay, demo polish and Docker deployment. Phase 8 (optional Unity spike) is gated and not started.
+**Status (2026-10-21):** Phases 0-7 complete, including deterministic replay, demo polish and Docker deployment. The optional Phase 8 Unity spike is also complete.
 
 **Architecture:** FastAPI + SQLite backend is the authority (scenario, scoring, AAR, replay, adaptive); a Three.js/Vite browser client is the presentation layer; React dashboard for instructor/analytics. All communicate over `/api/v1` JSON per `docs/api/api_specification.md`.
 
@@ -94,7 +94,9 @@ docs/api/openapi.yaml   (frozen v1 contract)
 
 ## Phase 8 (optional) — Unity client spike
 
-Pin Unity LTS, minimal scene, `/health` then scenario flow (`docs/guides/local_setup.md §6-8`). Gate: only after Phase 7 DoD.
+**Status: complete.** Pin Unity LTS, minimal scene, `/health` then scenario flow (`docs/guides/local_setup.md §6-8`). Gate: only after Phase 7 DoD.
+
+**Delivered:** `unity/Aeroguard-Unity` on Unity `6000.6.5f1` with a runtime-built scene, coroutine HTTP client for the frozen v1 contract, seeded session loop (detect/classify/respond/false alarm/missed threats), AAR view and environment visuals. 17 EditMode tests, 1 guarded live PlayMode test against the API (final score 100, no mistakes), and a headless Windows player build. See `docs/plans/phase-8-unity-spike.md` and `unity/Aeroguard-Unity/README.md`. The browser client remains the supported training surface.
 
 ---
 
