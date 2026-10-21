@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { SessionHistoryEntry } from "../api/types";
+import { replayUrl } from "../config";
 import { formatConditions, formatDateTime, formatScore } from "../format";
 import type { ViewProps } from "./types";
 
@@ -51,6 +52,7 @@ export function HistoryView({ api, traineeId }: ViewProps): JSX.Element {
               <th scope="col">Conditions</th>
               <th scope="col">Threats</th>
               <th scope="col">Final</th>
+              <th scope="col">Replay</th>
             </tr>
           </thead>
           <tbody>
@@ -70,6 +72,16 @@ export function HistoryView({ api, traineeId }: ViewProps): JSX.Element {
                 </td>
                 <td>{session.threat_count}</td>
                 <td>{formatScore(session.final_score)}</td>
+                <td>
+                  <a
+                    href={replayUrl(session.session_id)}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`Replay session ${session.session_id}`}
+                  >
+                    Watch
+                  </a>
+                </td>
               </tr>
             ))}
           </tbody>

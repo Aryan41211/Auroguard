@@ -61,4 +61,15 @@ describe("HistoryView", () => {
 
     expect(await screen.findByText(/503 unavailable/)).toBeInTheDocument();
   });
+
+  it("links each session to the simulator replay", async () => {
+    const sessions = [sampleHistoryEntry({ session_id: "SES-77" })];
+    render(
+      <HistoryView api={createFakeApi({ sessions: { sessions } })} traineeId="TRAIN-001" />,
+    );
+
+    const link = await screen.findByRole("link", { name: "Replay session SES-77" });
+    expect(link).toHaveAttribute("href", "http://localhost:5173/#replay=SES-77");
+    expect(link).toHaveAttribute("target", "_blank");
+  });
 });
