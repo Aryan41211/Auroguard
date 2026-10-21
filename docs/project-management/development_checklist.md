@@ -153,5 +153,5 @@
 ## Optional
 
 - [x] React dashboard
-- [ ] VR
-- [ ] advanced analytics
+- [ ] VR (deferred: no XR hardware or Unity XR packages available)
+- [x] Advanced analytics: cohort condition report (`GET /api/v1/analytics/conditions`) + dashboard Analytics tab
