@@ -24,3 +24,23 @@ input, select { width: 100%; padding: 6px; background: #0d1117; color: #e6edf3; 
 table { border-collapse: collapse; width: 100%; }
 td, th { border-bottom: 1px solid #2a3b4d; padding: 6px 10px; text-align: left; }
 
+/* Replay */
+#replay-panel { top: 12px; right: 12px; width: 380px; max-height: 92vh; overflow: auto; font-size: 13px; }
+.replay-summary { margin-bottom: 10px; line-height: 1.5; }
+.replay-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.replay-controls #replay-scrub { flex: 1 1 160px; width: auto; padding: 0; }
+.replay-position, .replay-clock { font-variant-numeric: tabular-nums; color: #8b98a5; font-size: 12px; }
+.replay-note { font-size: 11px; color: #d29922; }
+.replay-events { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 3px; }
+.replay-event { display: flex; gap: 8px; align-items: baseline; padding: 4px 6px; border: 1px solid transparent; border-radius: 6px; cursor: pointer; }
+.replay-event:hover { background: rgba(31, 111, 235, 0.12); }
+.replay-event.is-active { border-color: #1f6feb; background: rgba(31, 111, 235, 0.18); }
+.replay-time { font-variant-numeric: tabular-nums; color: #58a6ff; flex: 0 0 auto; }
+.replay-label { flex: 0 0 auto; }
+.replay-states { color: #8b98a5; font-size: 11px; margin-left: auto; text-align: right; }
+
+/* Errors */
+.error-panel { inset: 0; margin: auto; height: fit-content; max-width: 520px; }
+.error-message { color: #f85149; font-family: ui-monospace, monospace; font-size: 13px; }
+.error-actions { display: flex; gap: 8px; }
+
