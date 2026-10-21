@@ -73,6 +73,16 @@ describe("buildHudHtml", () => {
     );
     expect(html).toContain("vis poor");
   });
+
+  it("renders a sound toggle that reflects the audio state", () => {
+    const threatStates = states(["T01", "pending"]);
+    const on = buildHudHtml(scenario([threat("T01", "unknown")]), threatStates, null, 10, true);
+    const off = buildHudHtml(scenario([threat("T01", "unknown")]), threatStates, null, 10, false);
+    expect(on).toContain("Sound on");
+    expect(off).toContain("Sound off");
+    expect(on).toContain('aria-pressed="true"');
+    expect(off).toContain('aria-pressed="false"');
+  });
 });
 
 describe("threatDotColor", () => {

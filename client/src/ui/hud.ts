@@ -12,6 +12,7 @@ export interface Hud {
   setRemaining(seconds: number): void;
   setSelected(id: string | null): void;
   setThreats(states: HudThreatState[]): void;
+  setSoundEnabled(enabled: boolean): void;
 }
 
 // Color is derived from the threat id hash only (same rule as the 3D meshes in
@@ -43,6 +44,7 @@ export function buildHudHtml(
   threats: HudThreatState[],
   selected: string | null,
   remaining: number,
+  soundEnabled = true,
 ): string {
   const rows = threats
     .map((t) => {
@@ -56,15 +58,25 @@ export function buildHudHtml(
     })
     .join("");
   const visibility = scenario.visibility === "clear" ? "" : ` &middot; vis ${scenario.visibility}`;
+  const soundLabel = soundEnabled ? "Sound on" : "Sound off";
   return `
     <div><strong>${scenario.environment} / ${scenario.time_of_day}</strong></div>
     <div>difficulty ${scenario.difficulty} &middot; sensor ${scenario.sensor_quality.toFixed(2)}${visibility}</div>
     <div>time left: ${Math.max(0, Math.ceil(remaining))}s</div>
     <div class="hud-threat-count">${threats.length} threat${threats.length === 1 ? "" : "s"}</div>
-    <ul class="hud-threats">${rows}</ul>`;
+    <ul class="hud-threats">${rows}</ul>
+    <button id="sound-toggle" class="hud-sound" type="button" aria-pressed="${soundEnabled}">${soundLabel}</button>`;
 }
 
-export function mountHud(root: HTMLElement, scenario: Scenario): Hud {
+export interface HudOptions {
+  onToggleSound?: () => void;
+}
+
+export function mountHud(
+  root: HTMLElement,
+  scenario: Scenario,
+  options: HudOptions = {},
+): Hud {
   const element = document.createElement("div");
   element.id = "hud";
   element.className = "panel";
@@ -72,10 +84,15 @@ export function mountHud(root: HTMLElement, scenario: Scenario): Hud {
 
   let selected: string | null = null;
   let remaining = scenario.duration_seconds;
+  let soundEnabled = true;
   let threats: HudThreatState[] = scenario.threats.map((t) => ({ id: t.id, stage: "pending" }));
 
   function render(): void {
-    element.innerHTML = buildHudHtml(scenario, threats, selected, remaining);
+    element.innerHTML = buildHudHtml(scenario, threats, selected, remaining, soundEnabled);
+    const toggle = element.querySelector<HTMLButtonElement>("#sound-toggle");
+    if (toggle && options.onToggleSound) {
+      toggle.addEventListener("click", () => options.onToggleSound?.());
+    }
   }
   render();
 
@@ -91,6 +108,10 @@ export function mountHud(root: HTMLElement, scenario: Scenario): Hud {
     },
     setThreats: (states) => {
       threats = states;
+      render();
+    },
+    setSoundEnabled: (enabled) => {
+      soundEnabled = enabled;
       render();
     },
   };
