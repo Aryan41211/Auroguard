@@ -1,0 +1,73 @@
+name: aeroguard
+
+services:
+  backend:
+    build:
+      context: ./backend
+    image: aeroguard-backend:latest
+    environment:
+      # Persist the SQLite database on a named volume so sessions survive
+      # container restarts.
+      AEROGUARD_DATABASE_URL: sqlite:////data/aeroguard.db
+      # Optional OpenAI-compatible narrator. Leave unset for the offline
+      # templated AAR text.
+      AEROGUARD_LLM_BASE_URL: ${AEROGUARD_LLM_BASE_URL:-}
+      AEROGUARD_LLM_API_KEY: ${AEROGUARD_LLM_API_KEY:-}
+      AEROGUARD_LLM_MODEL: ${AEROGUARD_LLM_MODEL:-}
+    volumes:
+      - aeroguard-data:/data
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import sys, urllib.request;
+          sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2).status == 200 else 1)
+      interval: 30s
+      timeout: 3s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+
+  client:
+    build:
+      context: ./client
+    image: aeroguard-client:latest
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "5173:80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/healthz"]
+      interval: 30s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+    restart: unless-stopped
+
+  dashboard:
+    build:
+      context: ./dashboard
+      args:
+        # Baked into the bundle: the public URL of the browser simulator.
+        VITE_SIMULATOR_URL: ${AEROGUARD_SIMULATOR_URL:-http://localhost:5173}
+    image: aeroguard-dashboard:latest
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "5174:80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/healthz"]
+      interval: 30s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  aeroguard-data:

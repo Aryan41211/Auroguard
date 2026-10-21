@@ -13,47 +13,47 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 
 ## B. Deterministic replay (backend authority)
 
-- [ ] B1 `app/schemas/replay.py` — ReplayResponse / ReplayEvent / ReplayFrame / ReplayThreatState
-- [ ] B2 `app/services/replay.py` — pure builder: events → ordered frames + per-threat state timeline
-- [ ] B3 `app/api/replay.py` — `GET /api/v1/sessions/{session_id}/replay`
-- [ ] B4 Wire router into `app/main.py`
-- [ ] B5 Tests: service unit tests (determinism, ordering, state timeline)
-- [ ] B6 Tests: API tests (200 shape, 404 unknown session)
-- [ ] B7 Update `docs/api/openapi.yaml` (path + schemas) — contract conformance
-- [ ] B8 Update `docs/api/api_specification.md`
+- [x] B1 `app/schemas/replay.py` — ReplayResponse / ReplayEvent / ReplayFrame / ReplayThreatState
+- [x] B2 `app/services/replay.py` — pure builder: events → ordered frames + per-threat state timeline
+- [x] B3 `app/api/replay.py` — `GET /api/v1/sessions/{session_id}/replay`
+- [x] B4 Wire router into `app/main.py`
+- [x] B5 Tests: service unit tests (determinism, ordering, state timeline)
+- [x] B6 Tests: API tests (200 shape, 404 unknown session)
+- [x] B7 Update `docs/api/openapi.yaml` (path + schemas) — contract conformance
+- [x] B8 Update `docs/api/api_specification.md`
 
 ## C. Replay viewer (client)
 
-- [ ] C1 `client/src/replay/timeline.ts` — pure timeline model (frames, scrub index)
-- [ ] C2 `client/src/replay/timeline.test.ts`
-- [ ] C3 `client/src/replay/replayPanel.ts` — scrubber UI + event feed
-- [ ] C4 `client/src/replay/replayPlayer.ts` — drives the 3D scene from frames
-- [ ] C5 `client/src/api/client.ts` — `getReplay(sessionId)`
-- [ ] C6 Entry point: "Watch replay" from AAR panel + `#replay=<session_id>` deep link
-- [ ] C7 Client tests for new modules
+- [x] C1 `client/src/replay/timeline.ts` — pure timeline model (frames, scrub index)
+- [x] C2 `client/src/replay/timeline.test.ts`
+- [x] C3 `client/src/replay/replayPanel.ts` — scrubber UI + event feed
+- [x] C4 `client/src/replay/replayPlayer.ts` — drives the 3D scene from frames
+- [x] C5 `client/src/api/client.ts` — `getReplay(sessionId)`
+- [x] C6 Entry point: "Watch replay" from AAR panel + `#replay=<session_id>` deep link
+- [x] C7 Client tests for new modules
 
 ## D. Sound & UI polish
 
-- [ ] D1 `client/src/audio/sounds.ts` — WebAudio synth cues (no binary assets, offline)
-- [ ] D2 `client/src/audio/sounds.test.ts`
-- [ ] D3 Wire cues into the session loop (detect / classify / respond / spawn / false alarm)
-- [ ] D4 UI polish: better lighting + sky, panel styling, keyboard shortcuts
-- [ ] D5 Error handling: API failures show a recoverable error panel (client + dashboard)
-- [ ] D6 Demo mode: guided auto-play ("demo" query param) for the demo script
+- [x] D1 `client/src/audio/sounds.ts` — WebAudio synth cues (no binary assets, offline)
+- [x] D2 `client/src/audio/sounds.test.ts`
+- [x] D3 Wire cues into the session loop (detect / classify / respond / spawn / false alarm)
+- [x] D4 UI polish: better lighting + sky, panel styling, keyboard shortcuts
+- [x] D5 Error handling: API failures show a recoverable error panel (client + dashboard)
+- [x] D6 Demo mode: guided auto-play ("demo" query param) for the demo script
 
 ## E. Dashboard integration
 
-- [ ] E1 History row "Replay" link → client replay deep link
-- [ ] E2 Dashboard error handling / empty states
-- [ ] E3 Dashboard tests
+- [x] E1 History row "Replay" link → client replay deep link
+- [x] E2 Dashboard error handling / empty states
+- [x] E3 Dashboard tests
 
 ## F. Deployment & operations
 
-- [ ] F1 `backend/Dockerfile` (multi-stage, non-root, healthcheck)
-- [ ] F2 `client/Dockerfile` + `dashboard/Dockerfile` (nginx, build-time API base)
-- [ ] F3 `docker-compose.yml` (backend, client, dashboard, healthchecks)
-- [ ] F4 `.dockerignore` files
-- [ ] F5 Docs: `docs/guides/docker.md`
+- [x] F1 `backend/Dockerfile` (multi-stage, non-root, healthcheck)
+- [x] F2 `client/Dockerfile` + `dashboard/Dockerfile` (nginx, build-time API base)
+- [x] F3 `docker-compose.yml` (backend, client, dashboard, healthchecks)
+- [x] F4 `.dockerignore` files
+- [x] F5 Docs: `docs/guides/docker.md`
 
 ## G. Demo validation & evidence
 
