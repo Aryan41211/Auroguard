@@ -1,4 +1,5 @@
 import type {
+  ConditionsAnalyticsResponse,
   PerformanceProfile,
   RecommendResponse,
   Scenario,
@@ -13,6 +14,7 @@ import type {
 export interface ApiClient {
   listSessions(traineeId?: string): Promise<SessionHistoryResponse>;
   getPerformance(traineeId: string): Promise<PerformanceProfile>;
+  getConditionAnalytics(traineeId?: string): Promise<ConditionsAnalyticsResponse>;
   recommend(traineeId: string): Promise<RecommendResponse>;
   generateScenario(request: ScenarioGenerateRequest): Promise<Scenario>;
 }
@@ -55,6 +57,10 @@ export function createApiClient(
     },
     getPerformance: (traineeId) =>
       get<PerformanceProfile>("/trainees/" + encodeURIComponent(traineeId) + "/performance"),
+    getConditionAnalytics: (traineeId) => {
+      const query = traineeId ? "?trainee_id=" + encodeURIComponent(traineeId) : "";
+      return get<ConditionsAnalyticsResponse>("/analytics/conditions" + query);
+    },
     recommend: (traineeId) =>
       post<RecommendResponse>("/training/recommend", { trainee_id: traineeId }),
     generateScenario: (request) =>
