@@ -4,8 +4,11 @@
 Aeroguard/
 │
 ├── README.md
-├── LICENSE
+├── LICENSE                  (MIT)
 ├── .gitignore
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 │
 ├── docs/
 │   ├── background/

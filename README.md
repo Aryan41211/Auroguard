@@ -161,6 +161,7 @@ Aeroguard/
 ├── dashboard/               React + Recharts instructor app (port 5174)
 ├── unity/Aeroguard-Unity/   Optional Unity 6 client spike (Phase 8)
 ├── docker-compose.yml       backend + simulator + dashboard (optional)
+├── .github/workflows/ci.yml backend · client · dashboard CI jobs
 ├── docs/                    engineering truth: background · modules · api · plans · guides
 └── report.md                phase verification reports
 ```
@@ -292,6 +293,24 @@ the routers and the docs in sync. `backend/scripts/validate_demo.py` runs the
 full demo sequence against a live API and asserts the five validation questions
 (see `docs/project-management/demo_evidence.md`).
 
+### Continuous integration
+
+GitHub Actions (`.github/workflows/ci.yml`) runs on every push to `main` and on
+every pull request:
+
+| Job | What it verifies |
+|---|---|
+| `backend` | Python 3.12, pinned `backend/requirements.txt`, `python -m pytest tests -q` |
+| `client` | Node 20, `npm ci`, TypeScript typecheck, Vitest, production build |
+| `dashboard` | Node 20, `npm ci`, TypeScript typecheck, Vitest, production build |
+
+Runs use dependency caching for pip and npm, least-privilege repository
+permissions and cancel superseded runs on the same ref. The tests themselves
+need no network, secrets or paid services; CI only downloads the pinned
+dependencies. The optional Unity spike is verified locally instead: running the
+Unity Test Framework requires a licensed Editor and Windows hardware, so it is
+intentionally not part of hosted CI.
+
 The optional Unity spike adds **17 EditMode tests** (offline) plus one guarded
 PlayMode integration test. Set `AEROGUARD_RUN_LIVE_TESTS=1` with the backend
 running to execute the live test; commands are in
@@ -348,6 +367,11 @@ training surface.
   what not to report publicly are in [SECURITY.md](SECURITY.md).
 - **License** — released under the [MIT License](LICENSE). By contributing you
   agree that your contribution is licensed under the same terms.
+
+**Continuous integration:** the backend, browser client and dashboard suites
+run automatically on every push to `main` and every pull request via
+`.github/workflows/ci.yml`. Unity EditMode and PlayMode tests remain a local,
+manually executed check.
 
 ---
 
