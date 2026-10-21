@@ -1,0 +1,19 @@
+{
+  "name": "Aeroguard.Runtime",
+  "rootNamespace": "Aeroguard",
+  "references": [
+    "UnityEngine.IMGUIModule",
+    "UnityEngine.JSONSerializeModule",
+    "UnityEngine.PhysicsModule",
+    "UnityEngine.UnityWebRequestModule"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
