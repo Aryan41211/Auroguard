@@ -147,7 +147,12 @@ function pick<T>(rng: () => number, values: readonly T[]): T {
 
 /** True when a point would sit in the open flight corridor. */
 function inFlightLane(x: number, z: number): boolean {
-  return Math.abs(z) < 27 || (Math.abs(x) < 16 && Math.abs(z) < 40);
+  return (
+    Math.abs(z) < 27 ||
+    (Math.abs(x) < 16 && Math.abs(z) < 40) ||
+    // Keep the camera's foreground view over the runway clear.
+    (Math.abs(x) < 24 && z > 20)
+  );
 }
 
 function urbanLayout(rng: () => number): EnvironmentLayout {

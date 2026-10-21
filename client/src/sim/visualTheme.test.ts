@@ -81,6 +81,8 @@ describe("generateEnvironmentLayout", () => {
         expect(Math.abs(building.z)).toBeGreaterThanOrEqual(27);
         expect(building.width).toBeGreaterThan(0);
         expect(building.height).toBeGreaterThan(0);
+        // Never put a tower in the camera's foreground over the runway.
+        expect(building.z > 20 && Math.abs(building.x) < 24).toBe(false);
       }
     }
   });
