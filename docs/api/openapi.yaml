@@ -190,6 +190,24 @@ paths:
           description: Unknown trainee_id
         "422":
           description: Invalid request body
+  /api/v1/analytics/conditions:
+    get:
+      summary: Aggregate completed-session scores by scenario conditions
+      operationId: getConditionAnalytics
+      parameters:
+        - name: trainee_id
+          in: query
+          required: false
+          description: Optionally narrow the cohort to one trainee.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Per-dimension condition buckets with mean scores
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConditionsAnalyticsResponse"
 components:
   schemas:
     ScenarioGenerateRequest:
@@ -668,3 +686,55 @@ components:
         duration_ms:
           type: integer
           minimum: 0
+    ConditionBucketMetrics:
+      type: object
+      required: [bucket, session_count, mean_final_score, mean_detection_score, mean_classification_score, mean_response_score, mean_timing_score]
+      properties:
+        bucket:
+          type: string
+          example: urban
+        session_count:
+          type: integer
+          minimum: 0
+        mean_final_score:
+          type: number
+          minimum: 0
+          maximum: 100
+        mean_detection_score:
+          type: number
+          minimum: 0
+          maximum: 30
+        mean_classification_score:
+          type: number
+          minimum: 0
+          maximum: 30
+        mean_response_score:
+          type: number
+          minimum: 0
+          maximum: 25
+        mean_timing_score:
+          type: number
+          minimum: 0
+          maximum: 15
+    ConditionDimension:
+      type: object
+      required: [dimension, buckets]
+      properties:
+        dimension:
+          type: string
+          enum: [environment, time_of_day, visibility]
+        buckets:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConditionBucketMetrics"
+    ConditionsAnalyticsResponse:
+      type: object
+      required: [total_sessions, dimensions]
+      properties:
+        total_sessions:
+          type: integer
+          minimum: 0
+        dimensions:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConditionDimension"

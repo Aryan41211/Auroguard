@@ -247,3 +247,54 @@ that event. Stages are `pending`, `spawned`, `detected`, `classified`,
 `responded` and `missed`. See `docs/modules/replay.md`.
 
 Errors: `404` for an unknown session or a missing scenario row.
+
+## 12. Cohort condition analytics
+
+`GET /analytics/conditions`
+
+Aggregates every completed, scored session into buckets for the scenario
+conditions the training loop already records: `environment`, `time_of_day` and
+`visibility`. Active or unscored sessions are excluded. An optional
+`trainee_id` query parameter narrows the cohort to one trainee.
+
+Each bucket reports its session count and the mean of the stored score
+components, rounded to two decimals. Buckets appear in canonical order
+(`urban`/`rural`, `day`/`night`, `clear`/`reduced`/`poor`); an empty database
+returns `total_sessions: 0` with empty bucket lists.
+
+Response:
+
+```json
+{
+  "total_sessions": 3,
+  "dimensions": [
+    {
+      "dimension": "environment",
+      "buckets": [
+        {
+          "bucket": "urban",
+          "session_count": 2,
+          "mean_final_score": 85.0,
+          "mean_detection_score": 25.5,
+          "mean_classification_score": 25.5,
+          "mean_response_score": 21.25,
+          "mean_timing_score": 12.75
+        },
+        {
+          "bucket": "rural",
+          "session_count": 1,
+          "mean_final_score": 70.0,
+          "mean_detection_score": 21.0,
+          "mean_classification_score": 21.0,
+          "mean_response_score": 17.5,
+          "mean_timing_score": 10.5
+        }
+      ]
+    }
+  ]
+}
+```
+
+This endpoint does not recompute scores; it reads the server-authoritative
+`ScoreRow` values written at session completion.
+
