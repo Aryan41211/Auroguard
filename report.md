@@ -136,7 +136,7 @@ Start-Process $unity -Wait -ArgumentList "-batchmode","-quit","-nographics","-pr
 
 ## Remaining Issues or Blockers
 - None for the spike. It is intentionally not a replacement for the browser client: IMGUI, procedural primitives, Windows and WebGL builds only, and no client-side replay.
-- A license file still does not exist. The Unity project and its build artifacts remain local (build ignored); source and `.meta` files are committed.
+- A license file did not exist at the time of the spike. The post-Phase-8 repo polish added the MIT `LICENSE`. The Unity project and its build artifacts remain local (build ignored); source and `.meta` files are committed.
 
 # Post-Phase-8 Completion Report - CI, repo polish, WebGL and analytics
 
@@ -150,7 +150,7 @@ Start-Process $unity -Wait -ArgumentList "-batchmode","-quit","-nographics","-pr
 ## Verification (merged main)
 ```text
 backend:   189 passed
-client:    76 passed, typecheck + build green
+client:    86 passed, typecheck + build green
 dashboard: 54 passed, typecheck + build green
 Unity:     17 EditMode passed; 1 live PlayMode passed; Windows + WebGL builds succeeded
 ```
@@ -160,3 +160,28 @@ CI YAML parsed with PyYAML; client/dashboard CI commands were run locally with t
 - VR/XR is deferred pending hardware and package support.
 - Unity live PlayMode testing remains manual because it needs a running backend and an editor license.
 - The dashboard build retains Vite's >500 kB chunk warning (non-failing).
+
+# Visual Overhaul Report
+
+## Delivered
+- **Deterministic visual themes:** `client/src/sim/visualTheme.ts` derives sky, fog, ground, sun/moon, exposure, window glow, runway-light and haze settings from environment, time of day and visibility. A seeded PRNG produces the same city/farm/tree layout for the same scenario seed.
+- **Procedural airfield:** `client/src/sim/environment.ts` adds a textured ground, marked runway, taxiway/apron, hangars, control tower, urban skyline or rural farmsteads, trees, distant hills, gradient sky dome, sun/moon glow, stars, clouds and visibility haze. Everything is generated in-browser; no binary assets or third-party textures.
+- **Lighting and rendering:** ACES filmic tone mapping, sRGB output, PCF soft shadow maps, directional sun/moon shadows, hemisphere/ambient fill, exposure tuned per time of day, pixel-ratio cap and full resize/disposal cleanup.
+- **Threat models:** threats are now low-poly quadcopters with a sculpted shell, four arms/motors, spinning rotors, red/green nav LEDs, strobe, camera gimbal and landing skids. The shell colour still comes only from the threat id hash, never the classification label. Selection uses a pulsing in-world ring and recursive raycasting on the drone hierarchy.
+- **HUD and panels:** glass-cockpit panels, cinematic vignette, gradient start/AAR cards, grouped action-button styling, HUD threat glow/selection states and responsive narrow-screen rules.
+- **Ground-truth safety:** visual state uses only scenario environment/time/visibility/seed and public threat ids. Replay stage colours still encode the trainee's decisions only. No visual changes affect scoring, events or API contracts.
+
+## Verification
+```text
+client: 86 passed (was 76), typecheck green, production build green
+```
+New tests cover theme day/night and fog differences, sun direction, seeded layout determinism and bounds, keeping the camera/flight corridor clear, the ID-only drone colour invariant, quadcopter structure and selection without recolouring.
+
+Browser smoke test (headless Chromium + WebGL 2.0 + live FastAPI backend):
+- Day urban scenario rendered with no console exceptions or error panel.
+- Night urban scenario rendered with a different, darker frame and no exceptions; HUD reflected `Urban / Night`, difficulty 4, sensor 0.75.
+- Both runs reached `on screen` with a spawned threat; no client-side runtime errors were reported.
+
+## Remaining Issues or Blockers
+- Visual quality is procedurally generated; there are no authored 3D assets, animations beyond rotor/hover motion, or post-processing bloom. The Unity spike keeps its existing simpler environment.
+- Headless screenshots were used for smoke testing; subjective art direction still benefits from a human visual review.

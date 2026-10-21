@@ -17,7 +17,7 @@ review objective scores and follow an explainable, personalised training loop.
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-![Tests](https://img.shields.io/badge/tests-189%20backend%20%C2%B7%2076%20client%20%C2%B7%2054%20dashboard%20%C2%B7%2018%20Unity-brightgreen)
+![Tests](https://img.shields.io/badge/tests-189%20backend%20%C2%B7%2086%20client%20%C2%B7%2054%20dashboard%20%C2%B7%2018%20Unity-brightgreen)
 ![Offline first](https://img.shields.io/badge/offline--first-localhost-blueviolet)
 ![CI](https://github.com/Aryan41211/Auroguard/actions/workflows/ci.yml/badge.svg)
 ![Status](https://img.shields.io/badge/status-Phase%208%20complete-success)
@@ -41,8 +41,8 @@ review objective scores and follow an explainable, personalised training loop.
   reproducible, debuggable and auditable.
 - **Server-authoritative scoring** — clients only report *what happened*; the
   backend derives *how well*. No client can inflate a score.
-- **Graphics-independent training logic** — a threat drawn as a sphere and one
-  drawn as a hi-fi model are scored identically, so the simulation can evolve
+- **Graphics-independent training logic** — a threat rendered as a simple marker
+  or as a detailed quadcopter is scored identically, so the simulation can evolve
   without touching the assessment.
 - **Explainable adaptation** — every recommendation cites the metrics behind it
   ("night score trails overall by 21 points…"), never a black box.
@@ -72,7 +72,7 @@ review objective scores and follow an explainable, personalised training loop.
 | Step | What happens |
 |---|---|
 | **Generate** | The seeded generator produces a scenario: difficulty, environment (urban/rural), time of day, visibility tier, sensor quality and a threat count of 1/2/3/5. |
-| **Play** | A Three.js browser client renders the scene; the trainee clicks **Detect → Classify → Respond** per threat, can raise a **false alarm**, and finishes. |
+| **Play** | A Three.js browser client renders a procedural airfield and city with day/night lighting, soft shadows and detailed quadcopter threats; the trainee clicks **Detect → Classify → Respond** per threat, can raise a **false alarm**, and finishes. |
 | **Score** | The backend replays the event log and computes a deterministic 0–100 score with timing and mistake analysis. |
 | **Review** | An After-Action Review surfaces summary, scores, timing, mistakes, strengths, weaknesses and a recommendation. |
 | **Replay** | Any session can be watched again with a server-derived timeline scrubber, from the AAR or a `#replay=SES-...` deep link. |
@@ -358,6 +358,15 @@ the full detect/classify/respond loop, AAR and visual conditions. Verified with
 mistakes) and headless Windows and WebGL player builds. See
 `docs/plans/phase-8-unity-spike.md`. The browser client remains the supported
 training surface.
+
+**Visual overhaul (post-Phase 8):** the browser simulator now builds a
+seed-deterministic airfield with a procedural runway, urban skyline or rural
+fields, trees, hills, clouds, stars and atmospheric haze. It uses ACES tone
+mapping, sRGB output, soft shadow maps, day/night/moon lighting, emissive
+windows and runway lights. Threats are detailed quadcopters with spinning
+rotors, nav LEDs and a gimbal; selection is highlighted in-world and by click
+raycasting. The HUD and panels use a glass-cockpit treatment. All visuals are
+scenario- and id-derived only, never ground-truth-derived.
 
 **Optional advanced analytics:** the instructor dashboard now has a cohort
 **Analytics** tab backed by `GET /api/v1/analytics/conditions`. It compares mean
