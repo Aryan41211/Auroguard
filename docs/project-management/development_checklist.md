@@ -4,7 +4,7 @@
 
 - [x] Create repository
 - [x] Add docs
-- [ ] Pin Unity version
+- [x] Pin Unity version
 - [x] Create Python environment
 - [x] Create FastAPI skeleton
 - [x] Add `/health`
@@ -35,7 +35,8 @@
 ## Unity
 
 > Delivered for the Phase 3 vertical slice by the browser Three.js client
-> (`client/`); the Unity implementation is deferred to the optional Phase 8.
+> (`client/`); the optional Phase 8 spike adds a Unity implementation
+> (`unity/Aeroguard-Unity`, Unity `6000.6.5f1`).
 
 - [x] Main scene
 - [x] Camera
@@ -125,6 +126,20 @@
 - [x] Dockerfiles, nginx configs, `docker-compose.yml`, `.dockerignore`
 - [x] `docs/guides/docker.md` and troubleshooting pass
 - [x] `docs/modules/replay.md` and API specification section
+
+## Unity spike (Phase 8, optional)
+
+- [x] Unity `6000.6.5f1` project with built-in modules only (`unity/Aeroguard-Unity`)
+- [x] Runtime-built scene: camera, lighting, procedural airfield, HUD
+- [x] Coroutine API client: health, scenario, session, events, complete, AAR
+- [x] Seeded session loop with timed spawns and deterministic threat paths
+- [x] Detect / classify / respond / false alarm / missed-threat recording
+- [x] AAR view with scores, mistakes and recommendations
+- [x] Day/night and visibility-driven fog/lighting (visual only)
+- [x] Headless `Configure` and `BuildWindows` editor automation
+- [x] 17 EditMode unit tests + 1 guarded live PlayMode integration test
+- [x] Windows player build verified in batch mode
+- [x] `unity/Aeroguard-Unity/README.md` and `docs/plans/phase-8-unity-spike.md`
 
 ## Polish
 
