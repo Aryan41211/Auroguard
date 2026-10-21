@@ -30,6 +30,30 @@ describe("createApiClient", () => {
     expect(fetchFn.mock.calls[0][0]).toBe("/api/v1/sessions?trainee_id=TRAIN%20001");
   });
 
+  it("GETs condition analytics without a filter", async () => {
+    const payload = { total_sessions: 0, dimensions: [] };
+    const fetchFn = vi.fn().mockResolvedValue(jsonResponse(payload));
+    const api = createApiClient("/api/v1", fetchFn as unknown as typeof fetch);
+
+    const result = await api.getConditionAnalytics();
+
+    expect(result).toEqual(payload);
+    expect(fetchFn.mock.calls[0][0]).toBe("/api/v1/analytics/conditions");
+  });
+
+  it("url-encodes the trainee_id filter for condition analytics", async () => {
+    const fetchFn = vi
+      .fn()
+      .mockResolvedValue(jsonResponse({ total_sessions: 0, dimensions: [] }));
+    const api = createApiClient("/api/v1", fetchFn as unknown as typeof fetch);
+
+    await api.getConditionAnalytics("TRAIN 001");
+
+    expect(fetchFn.mock.calls[0][0]).toBe(
+      "/api/v1/analytics/conditions?trainee_id=TRAIN%20001",
+    );
+  });
+
   it("GETs the trainee performance profile", async () => {
     const profile = { trainee_id: "TRAIN-001", session_count: 3 } as PerformanceProfile;
     const fetchFn = vi.fn().mockResolvedValue(jsonResponse(profile));
