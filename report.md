@@ -106,3 +106,34 @@ Full captured output: `docs/project-management/demo_evidence.md`.
 
 ## Remaining Issues or Blockers
 None for Phase 7. Phase 8 (optional Unity spike) is deliberately not started; it is gated behind the Phase 7 DoD. A license file still does not exist.
+# Phase 8 Verification Report - Unity client spike (optional)
+
+## Files Added and Changed
+- `unity/Aeroguard-Unity/` (new): Unity `6000.6.5f1` project pinned in `ProjectSettings/ProjectVersion.txt`; built-in packages only (test framework, IMGUI, JSON, physics, UnityWebRequest).
+- Runtime: `ClientConfig`, `ApiDtos`, `ApiJson`, `AeroguardApi`, `SimulationManager`, `ThreatPath`, `ThreatController`, `EnvironmentView`, `ScenarioHud`, `AeroguardBootstrap`.
+- Editor automation: `Assets/Editor/ProjectSetup.cs` (`Configure`, `BuildWindows`).
+- Tests: 17 EditMode tests across `ClientConfigTests`, `ThreatPathTests`, `ApiDtosTests`, `ApiJsonTests`; one guarded PlayMode live test (`UnityBackendIntegrationTests`).
+- Docs: `unity/Aeroguard-Unity/README.md`, `docs/plans/phase-8-unity-spike.md`; roadmap, checklist, TODO and README updated.
+- `.gitignore`: Unity `Logs/`, `UserSettings/`, `MemoryCaptures/`, `Recordings/` entries.
+
+## Tests and Validation Commands with Actual Results
+```powershell
+$unity = "C:\Program Files\Unity\Hub\Editor\6000.6.5f1\Editor\Unity.exe"
+# Configure (batch)
+Start-Process $unity -Wait -ArgumentList "-batchmode","-quit","-nographics","-projectPath","unity/Aeroguard-Unity","-executeMethod","Aeroguard.EditorTools.ProjectSetup.Configure"
+# EditMode
+Start-Process $unity -Wait -ArgumentList "-batchmode","-nographics","-projectPath","unity/Aeroguard-Unity","-runTests","-testPlatform","EditMode","-testResults","$env:TEMP\editmode.xml"
+# PlayMode live (backend on :8000)
+$env:AEROGUARD_RUN_LIVE_TESTS="1"; $env:AEROGUARD_API_URL="http://127.0.0.1:8000"
+Start-Process $unity -Wait -ArgumentList "-batchmode","-nographics","-projectPath","unity/Aeroguard-Unity","-runTests","-testPlatform","PlayMode","-testResults","$env:TEMP\playmode.xml"
+# Windows build
+Start-Process $unity -Wait -ArgumentList "-batchmode","-quit","-nographics","-projectPath","unity/Aeroguard-Unity","-executeMethod","Aeroguard.EditorTools.ProjectSetup.BuildWindows"
+```
+- EditMode: `17 passed, 0 failed`.
+- PlayMode live: `1 passed, 0 failed` - health, scenario, session, full event chain, complete and AAR; final score `100`, no mistakes, summary contains `100`.
+- Windows player build: success, `95,872,271` bytes at `unity/Aeroguard-Unity/Builds/Aeroguard.exe` (git-ignored).
+- Initial live run failed with `422 unknown threat_id: ` because `JsonUtility` serialised a null `threat_id` as `""`; added `ApiJson.SerializeEvent` to omit the field for session-level events, covered by three new unit tests.
+
+## Remaining Issues or Blockers
+- None for the spike. It is intentionally not a replacement for the browser client: IMGUI, procedural primitives, Windows-only build, and no client-side replay.
+- A license file still does not exist. The Unity project and its build artifacts remain local (build ignored); source and `.meta` files are committed.
