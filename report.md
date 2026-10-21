@@ -137,3 +137,26 @@ Start-Process $unity -Wait -ArgumentList "-batchmode","-quit","-nographics","-pr
 ## Remaining Issues or Blockers
 - None for the spike. It is intentionally not a replacement for the browser client: IMGUI, procedural primitives, Windows and WebGL builds only, and no client-side replay.
 - A license file still does not exist. The Unity project and its build artifacts remain local (build ignored); source and `.meta` files are committed.
+
+# Post-Phase-8 Completion Report - CI, repo polish, WebGL and analytics
+
+## Delivered
+- **CI:** `.github/workflows/ci.yml` runs backend pytest and client/dashboard typecheck, tests and builds on push to `main` and pull requests. Node 20, Python 3.12, npm/pip caches, read-only permissions, concurrency cancellation. Unity tests stay local (editor licensing).
+- **Repository polish:** MIT `LICENSE`, `SECURITY.md`, `CONTRIBUTING.md`, `.editorconfig`, README license/CI sections and repository-layout updates.
+- **Unity WebGL:** `ProjectSetup.BuildWebGL` with decompression fallback; build verified at `Builds/WebGL` (~6.4 MB, git-ignored); README documents static serving and the CORS/browser API-base caveat.
+- **Advanced analytics:** `GET /api/v1/analytics/conditions` aggregates completed sessions by environment, time of day and visibility, with optional `trainee_id`; OpenAPI and API docs updated; dashboard Analytics tab with chart, table, trainee filter and loading/empty/error states.
+- **VR:** deliberately not implemented. No XR hardware or Unity XR packages are available, so a VR surface could not be built or verified; it remains an explicit, documented backlog item.
+
+## Verification (merged main)
+```text
+backend:   189 passed
+client:    76 passed, typecheck + build green
+dashboard: 54 passed, typecheck + build green
+Unity:     17 EditMode passed; 1 live PlayMode passed; Windows + WebGL builds succeeded
+```
+CI YAML parsed with PyYAML; client/dashboard CI commands were run locally with the same scripts. GitHub-hosted runners were not executed locally.
+
+## Remaining Issues or Blockers
+- VR/XR is deferred pending hardware and package support.
+- Unity live PlayMode testing remains manual because it needs a running backend and an editor license.
+- The dashboard build retains Vite's >500 kB chunk warning (non-failing).
