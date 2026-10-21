@@ -19,6 +19,7 @@ review objective scores and follow an explainable, personalised training loop.
 
 ![Tests](https://img.shields.io/badge/tests-189%20backend%20%C2%B7%2076%20client%20%C2%B7%2054%20dashboard%20%C2%B7%2018%20Unity-brightgreen)
 ![Offline first](https://img.shields.io/badge/offline--first-localhost-blueviolet)
+![CI](https://github.com/Aryan41211/Auroguard/actions/workflows/ci.yml/badge.svg)
 ![Status](https://img.shields.io/badge/status-Phase%208%20complete-success)
 
 </div>
@@ -354,7 +355,7 @@ Compose, and a full demo-validation run with captured evidence
 `unity/Aeroguard-Unity` with a runtime-built scene, the frozen v1 API contract,
 the full detect/classify/respond loop, AAR and visual conditions. Verified with
 17 EditMode tests, a live PlayMode integration test (final score 100, no
-mistakes) and a headless Windows player build. See
+mistakes) and headless Windows and WebGL player builds. See
 `docs/plans/phase-8-unity-spike.md`. The browser client remains the supported
 training surface.
 
