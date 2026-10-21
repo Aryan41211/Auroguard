@@ -22,4 +22,19 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "Score trends" })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Session history" })).not.toBeInTheDocument();
   });
+
+  it("opens the analytics tab", async () => {
+    const user = userEvent.setup();
+    render(<App api={createFakeApi()} />);
+    await screen.findByText(/No sessions yet/);
+
+    await user.click(screen.getByRole("button", { name: "Analytics" }));
+
+    expect(
+      screen.getByRole("heading", { name: "Condition analytics" }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(/No completed sessions to analyse yet/),
+    ).toBeInTheDocument();
+  });
 });
