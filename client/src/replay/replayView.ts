@@ -1,6 +1,6 @@
 import type { ReplayResponse } from "../api/types";
 import { createSimScene } from "../sim/scene";
-import { createThreatView, updateThreatView, type ThreatView } from "../sim/threats";
+import { createThreatView, disposeThreatView, updateThreatView, type ThreatView } from "../sim/threats";
 import { createReplayPlayer, systemClock } from "./replayPlayer";
 import { mountReplayPanel, type ReplayPanel } from "./replayPanel";
 import { applyThreatState } from "./threatState";
@@ -84,6 +84,7 @@ export function mountReplayView(
       cancelAnimationFrame(frameHandle);
       player.destroy();
       panel.destroy();
+      for (const view of views.values()) disposeThreatView(view);
       sim.dispose();
       sceneContainer.remove();
     },

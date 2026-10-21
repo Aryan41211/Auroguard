@@ -6,7 +6,7 @@ import { createAutoPlay } from "./demo/autoPlay";
 import { mountReplayView } from "./replay/replayView";
 import { createSimScene } from "./sim/scene";
 import { Spawner } from "./sim/spawner";
-import { createThreatView, updateThreatView, type ThreatView } from "./sim/threats";
+import { createThreatView, disposeThreatView, setThreatSelected, updateThreatView, type ThreatView } from "./sim/threats";
 import { SessionController } from "./state/session";
 import { mountActions } from "./ui/actions";
 import { showAar } from "./ui/aar";
@@ -116,6 +116,15 @@ function startPlay(scenario: Scenario, sessionId: string, traineeId: string): vo
     },
   });
 
+  function selectThreat(id: string | null): void {
+    selected = id;
+    hud.setSelected(id);
+    for (const view of views.values()) {
+      setThreatSelected(view, view.profile.id === id);
+    }
+  }
+  selectThreat(selected);
+
   // Push per-threat stage changes (spawn/detect/classify/respond) into the HUD.
   let hudStageKey = "";
   function syncHudThreats(): void {
@@ -146,8 +155,7 @@ function startPlay(scenario: Scenario, sessionId: string, traineeId: string): vo
   const spawner = new Spawner(scenario, (id) => {
     controller.spawnThreat(id);
     cue("spawn");
-    selected = id;
-    hud.setSelected(id);
+    selectThreat(id);
     autoPlay?.onSpawn(id);
   });
   controller.start();
@@ -189,7 +197,8 @@ function startPlay(scenario: Scenario, sessionId: string, traineeId: string): vo
   }
   window.addEventListener("keydown", onKey);
 
-  // Click a threat in the scene to select it.
+  // Click a threat in the scene to select it. Raycasting is recursive because a
+  // drone is a group of body, arm, rotor and light meshes.
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   sim.renderer.domElement.addEventListener("click", (event) => {
@@ -198,10 +207,12 @@ function startPlay(scenario: Scenario, sessionId: string, traineeId: string): vo
     pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
     raycaster.setFromCamera(pointer, sim.camera);
     const meshes = [...views.values()].map((v) => v.mesh);
-    const hit = raycaster.intersectObjects(meshes, false)[0];
-    if (hit) {
-      const view = [...views.values()].find((v) => v.mesh === hit.object);
-      if (view) { selected = view.profile.id; hud.setSelected(selected); }
+    const hit = raycaster.intersectObjects(meshes, true)[0];
+    if (!hit) return;
+    let node: THREE.Object3D | null = hit.object;
+    while (node && typeof node.userData.threatId !== "string") node = node.parent;
+    if (node && typeof node.userData.threatId === "string") {
+      selectThreat(node.userData.threatId);
     }
   });
 
@@ -224,6 +235,7 @@ function startPlay(scenario: Scenario, sessionId: string, traineeId: string): vo
     }
     cue("complete");
     window.removeEventListener("keydown", onKey);
+    for (const view of views.values()) disposeThreatView(view);
     sim.dispose();
     const decisions = new Map(
       [...views.values()].map((v) => [v.profile.id, v.profile] as const),

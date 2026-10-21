@@ -1,7 +1,6 @@
-import * as THREE from "three";
 import { describe, expect, it } from "vitest";
 import type { ClassificationLabel, ThreatProfile } from "../api/types";
-import { createThreatView } from "./threats";
+import { createThreatView, setThreatSelected } from "./threats";
 
 function threat(id: string, label: ClassificationLabel): ThreatProfile {
   return {
@@ -12,8 +11,7 @@ function threat(id: string, label: ClassificationLabel): ThreatProfile {
 
 function colorOf(id: string, label: ClassificationLabel): number {
   const view = createThreatView(threat(id, label));
-  const material = (view.mesh as THREE.Mesh).material as THREE.MeshStandardMaterial;
-  return material.color.getHex();
+  return view.bodyMaterials[0].color.getHex();
 }
 
 describe("createThreatView", () => {
@@ -28,5 +26,25 @@ describe("createThreatView", () => {
       ["T01", "T02", "T03", "T04", "T05"].map((id) => colorOf(id, "hostile")),
     );
     expect(seen.size).toBeGreaterThan(1);
+  });
+
+  it("renders a quadcopter with four rotors and a hidden selection ring", () => {
+    const view = createThreatView(threat("T01", "hostile"));
+    expect(view.mesh.name).toBe("threat-drone");
+    expect(view.rotors).toHaveLength(4);
+    expect(view.selectionRing.visible).toBe(false);
+    expect(view.mesh.userData.threatId).toBe("T01");
+    expect(view.mesh.visible).toBe(false);
+  });
+
+  it("exposes selection without changing the id-derived shell colour", () => {
+    const view = createThreatView(threat("T01", "hostile"));
+    const before = view.bodyMaterials[0].color.getHex();
+    view.mesh.visible = true;
+    setThreatSelected(view, true);
+    expect(view.selectionRing.visible).toBe(true);
+    expect(view.bodyMaterials[0].color.getHex()).toBe(before);
+    setThreatSelected(view, false);
+    expect(view.selectionRing.visible).toBe(false);
   });
 });

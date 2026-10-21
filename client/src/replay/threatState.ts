@@ -1,5 +1,4 @@
 import type { ReplayThreatState } from "../api/types";
-import * as THREE from "three";
 import type { ThreatView } from "../sim/threats";
 
 /**
@@ -18,8 +17,11 @@ export const STAGE_COLORS: Record<string, number> = {
 
 /** Apply a replayed threat state to a 3D threat view. */
 export function applyThreatState(view: ThreatView, state: ReplayThreatState): void {
-  const material = (view.mesh as THREE.Mesh).material as THREE.MeshStandardMaterial;
-  material.color.setHex(STAGE_COLORS[state.stage] ?? STAGE_COLORS.spawned);
+  const color = STAGE_COLORS[state.stage] ?? STAGE_COLORS.spawned;
+  for (const material of view.bodyMaterials) {
+    material.color.setHex(color);
+    material.emissive.setHex(color).multiplyScalar(0.12);
+  }
   view.mesh.visible = state.stage !== "pending";
 }
 
