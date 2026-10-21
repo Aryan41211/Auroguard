@@ -55,5 +55,32 @@ namespace Aeroguard.EditorTools
 
             Debug.Log("Aeroguard Windows build succeeded: " + report.summary.totalSize + " bytes");
         }
+
+        /// <summary>
+        /// Build a WebGL player into Builds/WebGL. Gzip assets plus the
+        /// decompression fallback keep the output servable by any plain static
+        /// file server (no Content-Encoding headers required).
+        /// </summary>
+        [MenuItem("Aeroguard/Build WebGL")]
+        public static void BuildWebGL()
+        {
+            Configure();
+            PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Gzip;
+            PlayerSettings.WebGL.decompressionFallback = true;
+
+            Directory.CreateDirectory("Builds");
+            var report = BuildPipeline.BuildPlayer(
+                new[] { ScenePath },
+                "Builds/WebGL",
+                BuildTarget.WebGL,
+                BuildOptions.None);
+
+            if (report.summary.result != UnityEditor.Build.Reporting.BuildResult.Succeeded)
+            {
+                throw new UnityEditor.Build.BuildFailedException("WebGL build failed: " + report.summary.result);
+            }
+
+            Debug.Log("Aeroguard WebGL build succeeded: " + report.summary.totalSize + " bytes at Builds/WebGL");
+        }
     }
 }
