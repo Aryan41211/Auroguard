@@ -159,6 +159,7 @@ Aeroguard/
 ├── dashboard/               React + Recharts instructor app (port 5174)
 ├── unity/Aeroguard-Unity/   Optional Unity 6 client spike (Phase 8)
 ├── docker-compose.yml       backend + simulator + dashboard (optional)
+├── .github/workflows/ci.yml backend · client · dashboard CI jobs
 ├── docs/                    engineering truth: background · modules · api · plans · guides
 └── report.md                phase verification reports
 ```
