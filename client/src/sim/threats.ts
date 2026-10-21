@@ -31,11 +31,20 @@ export function createThreatView(profile: ThreatProfile): ThreatView {
   return { profile, mesh };
 }
 
-export function updateThreatView(view: ThreatView, elapsedSec: number): void {
+export interface ThreatViewOptions {
+  /** Overrides the spawn-time visibility rule (used by the replay). */
+  visible?: boolean;
+}
+
+export function updateThreatView(
+  view: ThreatView,
+  elapsedSec: number,
+  options: ThreatViewOptions = {},
+): void {
   const speed = SPEED_UNITS[view.profile.speed_class ?? "medium"];
   const travel = Math.max(0, elapsedSec - view.profile.spawn_time);
   const startX = view.mesh.userData.startX as number;
   const row = view.mesh.userData.row as number;
   view.mesh.position.set(startX + speed * travel - 30, 8 + Math.sin(travel) * 0.5, row * 20);
-  view.mesh.visible = elapsedSec >= view.profile.spawn_time;
+  view.mesh.visible = options.visible ?? elapsedSec >= view.profile.spawn_time;
 }

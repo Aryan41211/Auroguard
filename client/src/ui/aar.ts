@@ -20,16 +20,24 @@ function threatRows(threats: ThreatProfile[]): string {
     .join("");
 }
 
+export interface AarOptions {
+  onAgain(): void;
+  onReplay?(): void;
+}
+
 export function showAar(
   root: HTMLElement,
   scenario: Scenario,
   result: CompleteResponse,
   threats: Map<string, ThreatProfile>,
-  onAgain: () => void,
+  options: AarOptions,
 ): void {
   const panel = document.createElement("div");
   panel.id = "aar-panel";
   panel.className = "panel";
+  const replayButton = options.onReplay
+    ? '<button id="replay">Watch replay</button> '
+    : "";
   panel.innerHTML = `
     <div style="min-width:360px">
       <h2>After Action Review</h2>
@@ -41,11 +49,18 @@ export function showAar(
       <p>scoring_version ${result.scoring_version} &middot; scenario ${scenario.scenario_id} (seed ${scenario.seed})</p>
       <h3>Threats</h3>
       <table><tr><th>id</th><th>expected label</th><th>expected response</th></tr>${threatRows([...threats.values()])}</table>
-      <p><button id="again">Play again</button></p>
+      <p>${replayButton}<button id="again">Play again</button></p>
     </div>`;
   root.appendChild(panel);
   panel.querySelector<HTMLButtonElement>("#again")!.addEventListener("click", () => {
     panel.remove();
-    onAgain();
+    options.onAgain();
   });
+  const replay = panel.querySelector<HTMLButtonElement>("#replay");
+  if (replay && options.onReplay) {
+    replay.addEventListener("click", () => {
+      panel.remove();
+      options.onReplay?.();
+    });
+  }
 }

@@ -1,11 +1,14 @@
 import * as THREE from "three";
 import { createApiClient } from "./api/client";
 import type { ClassificationLabel, ExpectedResponse, Scenario } from "./api/types";
+import { mountReplayView } from "./replay/replayView";
 import { createSimScene } from "./sim/scene";
 import { Spawner } from "./sim/spawner";
 import { createThreatView, updateThreatView, type ThreatView } from "./sim/threats";
 import { SessionController } from "./state/session";
 import { mountActions } from "./ui/actions";
+import { showAar } from "./ui/aar";
+import { errorMessage, mountErrorPanel } from "./ui/errors";
 import { mountHud } from "./ui/hud";
 import { mountStartPanel } from "./ui/startPanel";
 
@@ -16,18 +19,56 @@ function clear(): void {
   app.innerHTML = "";
 }
 
-mountStartPanel(app, (request, traineeId) => {
-  void runSession(request, traineeId);
-}, window.location.search);
+function showStart(): void {
+  clear();
+  mountStartPanel(app, (request, traineeId) => {
+    void runSession(request, traineeId);
+  }, window.location.search);
+}
+
+/** Session id requested through the `#replay=<session_id>` deep link. */
+function replaySessionId(): string | null {
+  const match = /replay=([A-Za-z0-9_-]+)/.exec(window.location.hash);
+  return match ? match[1] : null;
+}
+
+function showError(error: unknown, onRetry?: () => void): void {
+  clear();
+  mountErrorPanel(app, errorMessage(error), {
+    onRetry,
+    onBack: () => showStart(),
+  });
+}
 
 async function runSession(
   request: Parameters<typeof api.generateScenario>[0],
   traineeId: string,
 ): Promise<void> {
-  const scenario = await api.generateScenario(request);
-  const session = await api.createSession({ trainee_id: traineeId, scenario_id: scenario.scenario_id });
-  clear();
-  startPlay(scenario, session.session_id, traineeId);
+  try {
+    const scenario = await api.generateScenario(request);
+    const session = await api.createSession({
+      trainee_id: traineeId,
+      scenario_id: scenario.scenario_id,
+    });
+    clear();
+    startPlay(scenario, session.session_id, traineeId);
+  } catch (error) {
+    showError(error, () => {
+      void runSession(request, traineeId);
+    });
+  }
+}
+
+async function openReplay(sessionId: string): Promise<void> {
+  try {
+    const replay = await api.getReplay(sessionId);
+    clear();
+    mountReplayView(app, replay, { onClose: () => showStart() });
+  } catch (error) {
+    showError(error, () => {
+      void openReplay(sessionId);
+    });
+  }
 }
 
 function startPlay(scenario: Scenario, sessionId: string, traineeId: string): void {
@@ -112,10 +153,11 @@ function startPlay(scenario: Scenario, sessionId: string, traineeId: string): vo
     const decisions = new Map(
       [...views.values()].map((v) => [v.profile.id, v.profile] as const),
     );
-    const { showAar } = await import("./ui/aar");
-    showAar(app, scenario, result, decisions, () => {
-      clear();
-      mountStartPanel(app, (nextRequest, nextTrainee) => { void runSession(nextRequest, nextTrainee); }, window.location.search);
+    showAar(app, scenario, result, decisions, {
+      onAgain: () => showStart(),
+      onReplay: () => {
+        void openReplay(sessionId);
+      },
     });
   }
 
@@ -134,4 +176,11 @@ function startPlay(scenario: Scenario, sessionId: string, traineeId: string): vo
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
+}
+
+const requested = replaySessionId();
+if (requested) {
+  void openReplay(requested);
+} else {
+  showStart();
 }
