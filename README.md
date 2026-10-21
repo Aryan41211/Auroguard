@@ -16,9 +16,9 @@ review objective scores and follow an explainable, personalised training loop.
 [![Three.js](https://img.shields.io/badge/Three.js-r169-000000?logo=three.js&logoColor=white)](https://threejs.org/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 
-![Tests](https://img.shields.io/badge/tests-181%20backend%20%C2%B7%2076%20client%20%C2%B7%2044%20dashboard-brightgreen)
+![Tests](https://img.shields.io/badge/tests-181%20backend%20%C2%B7%2076%20client%20%C2%B7%2044%20dashboard%20%C2%B7%2018%20Unity-brightgreen)
 ![Offline first](https://img.shields.io/badge/offline--first-localhost-blueviolet)
-![Status](https://img.shields.io/badge/status-Phase%207%20complete-success)
+![Status](https://img.shields.io/badge/status-Phase%208%20complete-success)
 
 </div>
 
@@ -139,6 +139,7 @@ they never compute scores.
 | Backend | Python 3.12 · FastAPI · Pydantic v2 · SQLAlchemy 2 · SQLite · pytest |
 | Simulator client | TypeScript · Vite 5 · Three.js · Vitest |
 | Dashboard | React 18 · TypeScript · Vite 5 · Recharts · Vitest + Testing Library |
+| Unity spike (optional) | Unity 6000.6.5f1 · built-in modules · UnityWebRequest · IMGUI |
 | Runtime | Node 20+ (developed on Node 22); localhost only |
 
 ## Repository layout
@@ -156,6 +157,7 @@ Aeroguard/
 ├── client/                  Vite + TS + Three.js simulator (port 5173)
 │   └── src/replay/          timeline · player · scrubber · 3D replay view
 ├── dashboard/               React + Recharts instructor app (port 5174)
+├── unity/Aeroguard-Unity/   Optional Unity 6 client spike (Phase 8)
 ├── docker-compose.yml       backend + simulator + dashboard (optional)
 ├── docs/                    engineering truth: background · modules · api · plans · guides
 └── report.md                phase verification reports
@@ -163,8 +165,9 @@ Aeroguard/
 
 ## Getting started
 
-**Prerequisites:** Python 3.11/3.12, Node 20+, Git. (Unity is not required — the
-browser client covers the vertical slice.)
+**Prerequisites:** Python 3.11/3.12, Node 20+, Git. Unity **6000.6.5f1** is
+optional and only needed for the Phase 8 spike - the browser client covers the
+vertical slice.
 
 ### 1 · Backend
 
@@ -221,6 +224,20 @@ Open <http://localhost:5173/?demo=1> for a scripted auto-pilot that plays the
 scenario and deliberately leaves one teachable mistake for the AAR. Press `r` in
 the client to open the replay, or use the dashboard's "Watch" link.
 
+### 7 - Optional: Unity spike
+
+The Unity 6 client in `unity/Aeroguard-Unity` plays the same server-authoritative
+loop with a procedurally built scene and an IMGUI HUD. With the backend running,
+open the project in Unity `6000.6.5f1` and press Play, or run the built player:
+
+```powershell
+cd unity/Aeroguard-Unity
+.\Builds\Aeroguard.exe -aeroguardApi=http://127.0.0.1:8000
+```
+
+See `unity/Aeroguard-Unity/README.md` for controls, flags, test commands and
+headless build automation. The browser client remains the supported surface.
+
 ## API
 
 Base path `/api/v1`, JSON. The contract lives in `docs/api/openapi.yaml` and is
@@ -273,6 +290,11 @@ the routers and the docs in sync. `backend/scripts/validate_demo.py` runs the
 full demo sequence against a live API and asserts the five validation questions
 (see `docs/project-management/demo_evidence.md`).
 
+The optional Unity spike adds **17 EditMode tests** (offline) plus one guarded
+PlayMode integration test. Set `AEROGUARD_RUN_LIVE_TESTS=1` with the backend
+running to execute the live test; commands are in
+`unity/Aeroguard-Unity/README.md`.
+
 ## Documentation
 
 Start at `docs/guides/start_here.md`, then explore:
@@ -296,7 +318,7 @@ categories only** — no targeting, engagement or real-drone logic. See
 
 ## Status
 
-**Phases 0–7 complete:** environment · scenario engine · scoring & sessions ·
+**Phases 0-7 complete (plus the optional Phase 8 Unity spike):** environment · scenario engine · scoring & sessions ·
 browser client · AAR & adaptive training · content expansion · dashboard &
 instructor mode · **deterministic replay, demo polish and Docker deployment**.
 
@@ -306,9 +328,13 @@ shortcuts, recoverable error panels, a guided `?demo=1` auto-pilot, Docker
 Compose, and a full demo-validation run with captured evidence
 (`docs/project-management/demo_evidence.md`).
 
-**Phase 8** (optional Unity spike) remains gated and is not started. Progress
-is tracked in `docs/project-management/development_checklist.md` and
-`docs/plans/00-master-roadmap.md`.
+**Phase 8 delivered (optional Unity spike):** a Unity `6000.6.5f1` client in
+`unity/Aeroguard-Unity` with a runtime-built scene, the frozen v1 API contract,
+the full detect/classify/respond loop, AAR and visual conditions. Verified with
+17 EditMode tests, a live PlayMode integration test (final score 100, no
+mistakes) and a headless Windows player build. See
+`docs/plans/phase-8-unity-spike.md`. The browser client remains the supported
+training surface.
 
 ---
 
