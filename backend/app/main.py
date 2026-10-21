@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.aar import router as aar_router
+from app.api.analytics import router as analytics_router
 from app.api.replay import router as replay_router
 from app.api.scenarios import router as scenarios_router
 from app.api.sessions import router as sessions_router
@@ -40,6 +41,7 @@ app.include_router(sessions_router, prefix="/api/v1")
 app.include_router(aar_router, prefix="/api/v1")
 app.include_router(training_router, prefix="/api/v1")
 app.include_router(replay_router, prefix="/api/v1")
+app.include_router(analytics_router, prefix="/api/v1")
 
 
 @app.get("/health")
