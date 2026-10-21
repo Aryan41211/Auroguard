@@ -15,6 +15,7 @@ review objective scores and follow an explainable, personalised training loop.
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Three.js](https://img.shields.io/badge/Three.js-r169-000000?logo=three.js&logoColor=white)](https://threejs.org/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ![Tests](https://img.shields.io/badge/tests-181%20backend%20%C2%B7%2076%20client%20%C2%B7%2044%20dashboard%20%C2%B7%2018%20Unity-brightgreen)
 ![Offline first](https://img.shields.io/badge/offline--first-localhost-blueviolet)
@@ -63,6 +64,7 @@ review objective scores and follow an explainable, personalised training loop.
 - [Documentation](#documentation)
 - [Scope & safety](#scope--safety)
 - [Status](#status)
+- [Contributing, security & license](#contributing-security--license)
 
 ## What it does
 
@@ -336,8 +338,19 @@ mistakes) and a headless Windows player build. See
 `docs/plans/phase-8-unity-spike.md`. The browser client remains the supported
 training surface.
 
+## Contributing, security & license
+
+- **Contributing** — setup, branch and commit conventions, test commands for
+  every surface, and PR expectations are in
+  [CONTRIBUTING.md](CONTRIBUTING.md).
+- **Security** — report vulnerabilities privately through GitHub Security
+  Advisories; please do not open a public issue. Supported versions, scope and
+  what not to report publicly are in [SECURITY.md](SECURITY.md).
+- **License** — released under the [MIT License](LICENSE). By contributing you
+  agree that your contribution is licensed under the same terms.
+
 ---
 
 <div align="center">
-<sub>No license file is present yet — treat the code as all-rights-reserved until one is added.</sub>
+<sub>Released under the MIT License · Copyright (c) 2026 Aeroguard contributors</sub>
 </div>
