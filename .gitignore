@@ -20,6 +20,10 @@ __pycache__/
 [Bb]uild*/
 *.csproj
 *.sln
+unity/**/Logs/
+unity/**/UserSettings/
+unity/**/MemoryCaptures/
+unity/**/Recordings/
 
 # Databases
 *.db
