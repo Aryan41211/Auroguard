@@ -135,5 +135,5 @@ Start-Process $unity -Wait -ArgumentList "-batchmode","-quit","-nographics","-pr
 - Initial live run failed with `422 unknown threat_id: ` because `JsonUtility` serialised a null `threat_id` as `""`; added `ApiJson.SerializeEvent` to omit the field for session-level events, covered by three new unit tests.
 
 ## Remaining Issues or Blockers
-- None for the spike. It is intentionally not a replacement for the browser client: IMGUI, procedural primitives, Windows-only build, and no client-side replay.
+- None for the spike. It is intentionally not a replacement for the browser client: IMGUI, procedural primitives, Windows and WebGL builds only, and no client-side replay.
 - A license file still does not exist. The Unity project and its build artifacts remain local (build ignored); source and `.meta` files are committed.

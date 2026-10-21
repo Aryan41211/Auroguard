@@ -29,13 +29,13 @@ C#.
 | Simulation | Seeded scenario request, timed threat spawning, deterministic presentation path, detect/classify/respond, false alarm, missed-threat recording, auto-complete at duration |
 | AAR | Summary, component scores, mistakes, strengths/weaknesses, recommendation, next scenario |
 | Environment | Day/night light, fog density by visibility tier; visuals never affect scoring |
-| Automation | `Aeroguard.EditorTools.ProjectSetup.Configure` (scene + build settings) and `BuildWindows` |
+| Automation | `Aeroguard.EditorTools.ProjectSetup.Configure` (scene + build settings), `BuildWindows` and `BuildWebGL` |
 | Tests | 17 EditMode unit tests + 1 guarded PlayMode live integration test |
-| Build | Windows x64 player built in batch mode as a smoke check |
+| Build | Windows x64 and WebGL players built in batch mode as smoke checks |
 
 ## Explicit non-goals
 
-- Custom art, prefabs, animation, audio or WebGL/VR builds.
+- Custom art, prefabs, animation, audio or VR builds.
 - Client-side scoring, replay or adaptive recommendations.
 - Any backend or OpenAPI changes (the spike consumes the frozen `v1` contract).
 - Making Unity the supported training surface.
@@ -56,6 +56,10 @@ Unity -batchmode -nographics -projectPath unity/Aeroguard-Unity \
 # Windows player build
 Unity -batchmode -quit -nographics -projectPath unity/Aeroguard-Unity \
       -executeMethod Aeroguard.EditorTools.ProjectSetup.BuildWindows
+
+# WebGL player build
+Unity -batchmode -quit -nographics -projectPath unity/Aeroguard-Unity \
+      -executeMethod Aeroguard.EditorTools.ProjectSetup.BuildWebGL
 ```
 
 Captured results:
@@ -65,6 +69,9 @@ Captured results:
 - PlayMode live: **1 passed, 0 failed** - final score `100`, no mistakes, AAR
   summary contains `100`.
 - Windows build: success, ~96 MB player at `Builds/Aeroguard.exe` (git-ignored).
+- WebGL build: success, ~6.4 MB at `Builds/WebGL` (`index.html` plus gzip assets
+  and the decompression fallback, git-ignored). Served with
+  `python -m http.server 5174` from that folder.
 
 The live test is skipped unless `AEROGUARD_RUN_LIVE_TESTS=1`, so offline test
 runs stay green.
@@ -76,5 +83,5 @@ runs stay green.
 - IMGUI and runtime scene construction were chosen so the spike has no binary
   assets and stays reviewable.
 - If Unity is ever promoted beyond a spike: replace IMGUI with UGUI/UI Toolkit,
-  add prefabs and a proper scene, and add a WebGL build to CI. None of that
-  changes the backend contract.
+  add prefabs and a proper scene, and wire the Windows and WebGL builds into CI.
+  None of that changes the backend contract.

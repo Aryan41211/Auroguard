@@ -19,7 +19,7 @@ the browser.
 
 ## Requirements
 
-- Unity **6000.6.5f1** (Unity 6) with the Windows Build Support module.
+- Unity **6000.6.5f1** (Unity 6) with the Windows and WebGL Build Support modules.
 - The FastAPI backend running locally on `http://127.0.0.1:8000`.
 - No binary assets, prefabs or packages beyond Unity's built-in modules.
 
@@ -68,6 +68,12 @@ Example:
 ```powershell
 .\Builds\Aeroguard.exe -aeroguardApi=http://127.0.0.1:8000 -aeroguardSeed=12345
 ```
+
+> **WebGL caveat:** browsers cannot receive command-line flags or environment
+> variables, so the WebGL build always uses the defaults above, including
+> `http://127.0.0.1:8000` as the API base URL. To point a browser build at a
+> different backend, change `ClientConfig.DefaultBaseUrl` or add a URL query
+> parameter and rebuild; `-aeroguardApi` only affects desktop players.
 
 ## Architecture
 
@@ -151,9 +157,40 @@ Start-Process -FilePath $unity -Wait -ArgumentList @(
 )
 ```
 
+Build a WebGL player to `Builds/WebGL` (ignored by git):
+
+```powershell
+Start-Process -FilePath $unity -Wait -ArgumentList @(
+  "-batchmode", "-quit", "-nographics",
+  "-projectPath", "unity/Aeroguard-Unity",
+  "-executeMethod", "Aeroguard.EditorTools.ProjectSetup.BuildWebGL",
+  "-logFile", "$env:TEMP\unity-webgl-build.log"
+)
+```
+
+The build uses Gzip compression with the decompression fallback enabled, so it
+runs behind any plain static file server without special `Content-Encoding`
+headers.
+
+### Serve the WebGL build
+
+Start the backend first (see **Run it**), then serve the build folder:
+
+```powershell
+cd unity/Aeroguard-Unity/Builds/WebGL
+python -m http.server 5174
+```
+
+Open `http://127.0.0.1:5174/index.html`.
+
+Use port **5174** (or 5173) because the backend's CORS allowlist only accepts
+those origins. Serving on another port makes the browser block the API calls.
+Browsers also enforce mixed-content rules: if the page is served over HTTPS, the
+backend must be HTTPS too.
+
 ## Out of scope for the spike
 
-- WebGL/VR builds (Windows player verified only).
+- VR builds.
 - Custom art, animation, audio and prefabs.
 - Client-side replay of previous sessions (use the browser client or dashboard).
 - Offline rule scoring, adaptive logic or persistence (backend authority stays
