@@ -99,3 +99,26 @@ export interface RecommendResponse {
   threat_count: ThreatCount;
   reason: string;
 }
+
+export type AnalyticsDimension = "environment" | "time_of_day" | "visibility";
+
+/** GET /analytics/conditions — aggregates for one condition bucket. */
+export interface ConditionBucketMetrics {
+  bucket: string;
+  session_count: number;
+  mean_final_score: number;
+  mean_detection_score: number;
+  mean_classification_score: number;
+  mean_response_score: number;
+  mean_timing_score: number;
+}
+
+export interface ConditionDimension {
+  dimension: AnalyticsDimension;
+  buckets: ConditionBucketMetrics[];
+}
+
+export interface ConditionsAnalyticsResponse {
+  total_sessions: number;
+  dimensions: ConditionDimension[];
+}
