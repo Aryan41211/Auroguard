@@ -72,7 +72,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 
 ## I. Final verification
 
-- [ ] I1 Backend: `pytest -q` green
-- [ ] I2 Client: `npm run typecheck && npm test && npm run build` green
-- [ ] I3 Dashboard: `npm run typecheck && npm test && npm run build` green
-- [ ] I4 `git status` clean, commits pushed
+- [x] I1 Backend: `pytest -q` green
+- [x] I2 Client: `npm run typecheck && npm test && npm run build` green
+- [x] I3 Dashboard: `npm run typecheck && npm test && npm run build` green
+- [x] I4 `git status` clean, commits pushed
