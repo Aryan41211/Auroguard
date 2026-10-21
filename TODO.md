@@ -57,10 +57,10 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 
 ## G. Demo validation & evidence
 
-- [ ] G1 `backend/scripts/validate_demo.py` — full demo sequence against the live API
-- [ ] G2 Answer the 5 validation questions (seed / score / missed threat / comparison / adaptive)
-- [ ] G3 Write `docs/project-management/demo_evidence.md` with real captured output
-- [ ] G4 Troubleshooting pass → `docs/project-management/troubleshooting.md`
+- [x] G1 `backend/scripts/validate_demo.py` — full demo sequence against the live API
+- [x] G2 Answer the 5 validation questions (seed / score / missed threat / comparison / adaptive)
+- [x] G3 Write `docs/project-management/demo_evidence.md` with real captured output
+- [x] G4 Troubleshooting pass → `docs/project-management/troubleshooting.md`
 
 ## H. Documentation close-out
 
