@@ -363,5 +363,5 @@ manually executed check.
 ---
 
 <div align="center">
-<sub>No license file is present yet — treat the code as all-rights-reserved until one is added.</sub>
+<sub>No LICENSE file exists in this repository yet — treat the code as all-rights-reserved until one is added.</sub>
 </div>

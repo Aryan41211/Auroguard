@@ -4,8 +4,11 @@
 Aeroguard/
 │
 ├── README.md
-├── LICENSE
+├── LICENSE                  (planned; no license file exists yet)
 ├── .gitignore
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 │
 ├── docs/
 │   ├── background/
