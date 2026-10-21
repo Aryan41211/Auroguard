@@ -16,7 +16,7 @@ review objective scores and follow an explainable, personalised training loop.
 [![Three.js](https://img.shields.io/badge/Three.js-r169-000000?logo=three.js&logoColor=white)](https://threejs.org/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 
-![Tests](https://img.shields.io/badge/tests-181%20backend%20%C2%B7%2076%20client%20%C2%B7%2044%20dashboard%20%C2%B7%2018%20Unity-brightgreen)
+![Tests](https://img.shields.io/badge/tests-189%20backend%20%C2%B7%2076%20client%20%C2%B7%2054%20dashboard%20%C2%B7%2018%20Unity-brightgreen)
 ![Offline first](https://img.shields.io/badge/offline--first-localhost-blueviolet)
 ![Status](https://img.shields.io/badge/status-Phase%208%20complete-success)
 
@@ -74,7 +74,7 @@ review objective scores and follow an explainable, personalised training loop.
 | **Review** | An After-Action Review surfaces summary, scores, timing, mistakes, strengths, weaknesses and a recommendation. |
 | **Replay** | Any session can be watched again with a server-derived timeline scrubber, from the AAR or a `#replay=SES-...` deep link. |
 | **Adapt** | Performance is aggregated per condition and a rule-based recommender proposes the next scenario with its reasoning. |
-| **Instruct** | A React dashboard offers history, trends, a weakness heatmap, per-trainee performance and an instructor scenario builder. |
+| **Instruct** | A React dashboard offers history, trends, condition analytics, a weakness heatmap, per-trainee performance and an instructor scenario builder. |
 
 ## A session, end to end
 
@@ -99,7 +99,7 @@ exercise and its replay are always the same exercise.
 | Surface | Port | Purpose |
 |---|---|---|
 | Browser simulator client | `5173` | Play a scenario, detect/classify/respond, view the AAR and replay |
-| Instructor dashboard | `5174` | History, trends, weakness heatmap, performance, scenario builder, replay links |
+| Instructor dashboard | `5174` | History, trends, condition analytics, weakness heatmap, performance, scenario builder, replay links |
 | FastAPI backend | `8000` | Scenario, scoring, storage, AAR, replay and adaptive logic (`/docs` for Swagger) |
 
 ## Architecture
@@ -148,9 +148,9 @@ they never compute scores.
 Aeroguard/
 ├── backend/                 FastAPI app, services, db, tests, scripts/
 │   ├── app/
-│   │   ├── api/             scenarios · sessions · aar · replay · training routers
+│   │   ├── api/             scenarios · sessions · aar · replay · training · analytics routers
 │   │   ├── schemas/         pydantic request/response models
-│   │   ├── services/        scenario_generator · scoring · aar · replay · adaptive · demo_seed
+│   │   ├── services/        scenario_generator · scoring · aar · replay · adaptive · analytics · demo_seed
 │   │   └── db/              SQLAlchemy models + session
 │   ├── scripts/             seed_demo.py · validate_demo.py
 │   └── tests/               pytest suite (unit · contract · integration)
@@ -255,6 +255,7 @@ the human-readable companion.
 | `GET`  | `/sessions/{id}/aar` | After-Action Review for a completed session |
 | `GET`  | `/sessions/{id}/replay` | Deterministic event log + server-derived replay frames |
 | `GET`  | `/trainees/{id}/performance` | Historical per-condition aggregates |
+| `GET`  | `/analytics/conditions` | Cohort aggregates by environment, time of day and visibility (optional `?trainee_id=`) |
 | `POST` | `/training/recommend` | Rule-based next-scenario recommendation + reason |
 
 ## Scoring model
@@ -275,13 +276,13 @@ See `docs/modules/scoring_engine.md`.
 ## Testing
 
 ```bash
-# Backend — 181 tests
+# Backend — 189 tests
 cd backend && .venv/Scripts/python -m pytest tests -q
 
 # Simulator client — typecheck + 76 unit tests + build
 cd client && npm run typecheck && npm test && npm run build
 
-# Dashboard — typecheck + 44 unit tests + build
+# Dashboard — typecheck + 54 unit tests + build
 cd dashboard && npm run typecheck && npm test && npm run build
 ```
 
@@ -302,7 +303,7 @@ Start at `docs/guides/start_here.md`, then explore:
 | Area | Where |
 |---|---|
 | Background | `docs/background/problem_and_scope.md`, `safety_scope.md` |
-| Modules | `docs/modules/` — architecture, scenario engine, scoring, event model, replay, AAR & adaptive training, FastAPI backend, UI/UX |
+| Modules | `docs/modules/` — architecture, scenario engine, scoring, event model, replay, AAR & adaptive training, condition analytics, FastAPI backend, UI/UX |
 | API | `docs/api/api_specification.md`, `docs/api/openapi.yaml` |
 | Guides | `docs/guides/` — local setup, testing & validation, project structure, Docker deployment |
 | Plans | `docs/plans/00-master-roadmap.md` and per-phase plans |
@@ -335,6 +336,14 @@ the full detect/classify/respond loop, AAR and visual conditions. Verified with
 mistakes) and a headless Windows player build. See
 `docs/plans/phase-8-unity-spike.md`. The browser client remains the supported
 training surface.
+
+**Optional advanced analytics:** the instructor dashboard now has a cohort
+**Analytics** tab backed by `GET /api/v1/analytics/conditions`. It compares mean
+final, detection, classification, response and timing scores across
+environment, time-of-day and visibility buckets for completed sessions, with an
+optional trainee filter. There is no VR/XR surface — the optional VR item was
+explicitly out of scope for this project because no XR hardware or packages
+were available. See `docs/modules/advanced_analytics.md`.
 
 ---
 
