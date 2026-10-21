@@ -64,11 +64,11 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 
 ## H. Documentation close-out
 
-- [ ] H1 README — status, replay, docker, new endpoints, test counts
-- [ ] H2 `docs/project-management/development_checklist.md` — Phase 7 + Polish sections
-- [ ] H3 `docs/plans/00-master-roadmap.md` — Phase 7 marked complete
-- [ ] H4 `report.md` — Phase 7 verification report
-- [ ] H5 `docs/modules/*.md` — replay module doc
+- [x] H1 README — status, replay, docker, new endpoints, test counts
+- [x] H2 `docs/project-management/development_checklist.md` — Phase 7 + Polish sections
+- [x] H3 `docs/plans/00-master-roadmap.md` — Phase 7 marked complete
+- [x] H4 `report.md` — Phase 7 verification report
+- [x] H5 `docs/modules/*.md` — replay module doc
 
 ## I. Final verification
 

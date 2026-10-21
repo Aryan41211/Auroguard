@@ -178,3 +178,72 @@ Response:
 ```
 
 Score fields are null while a session is still `active`.
+
+## 11. Session replay
+
+`GET /sessions/{session_id}/replay`
+
+Returns the recorded event log plus server-derived frames for the replay
+scrubber. Works for active and completed sessions; `score` is `null` until the
+session has been scored. Two requests for the same session return identical
+payloads (events and frames are stable-sorted by `timestamp_ms`, then
+`event_id`).
+
+Response:
+
+```json
+{
+  "session_id": "SES-1001",
+  "trainee_id": "TRAIN-001",
+  "scenario": {
+    "scenario_id": "SCN-100",
+    "seed": 12345,
+    "difficulty": 5,
+    "threats": []
+  },
+  "events": [
+    {
+      "event_id": "EVT-042",
+      "type": "THREAT_DETECTED",
+      "timestamp_ms": 59400,
+      "threat_id": "T01",
+      "payload": { "confidence": 0.92 }
+    }
+  ],
+  "frames": [
+    {
+      "timestamp_ms": 59400,
+      "event_id": "EVT-042",
+      "event_type": "THREAT_DETECTED",
+      "label": "T01 detected",
+      "threat_id": "T01",
+      "threats": [
+        {
+          "threat_id": "T01",
+          "stage": "detected",
+          "detected": true,
+          "classification": null,
+          "response": null
+        }
+      ]
+    }
+  ],
+  "score": {
+    "session_id": "SES-1001",
+    "detection_score": 30.0,
+    "classification_score": 30.0,
+    "response_score": 25.0,
+    "timing_score": 15.0,
+    "penalty": 0.0,
+    "final_score": 100.0,
+    "scoring_version": 1
+  },
+  "duration_ms": 200000
+}
+```
+
+`frames` contains one entry per event, carrying the state of every threat after
+that event. Stages are `pending`, `spawned`, `detected`, `classified`,
+`responded` and `missed`. See `docs/modules/replay.md`.
+
+Errors: `404` for an unknown session or a missing scenario row.

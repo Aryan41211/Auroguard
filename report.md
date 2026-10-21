@@ -73,3 +73,36 @@ The throwaway `tmp_p6.db` was deleted after verification.
 
 ## Remaining Issues or Blockers
 None. Phase 6 is complete; Phase 7 (replay, demo polish, deployment) is next.
+
+# Phase 7 Verification Report — Replay, demo polish, deployment
+
+## Files Added and Changed
+- Backend: `app/schemas/replay.py`, `app/services/replay.py`, `app/api/replay.py`, router wiring in `app/main.py`; replay tests (`tests/test_replay_service.py`, `tests/test_replay_api.py`); `scripts/validate_demo.py` + `tests/test_validate_demo.py`; `Dockerfile`, `.dockerignore`.
+- Client: `src/replay/{timeline,replayPlayer,replayPanel,replayView,threatState}.ts` (+ tests), `src/audio/sounds.ts`, `src/demo/autoPlay.ts`, `src/ui/{shortcuts,errors}.ts` (+ tests), wiring in `src/main.ts`, AAR replay button, `#replay=` deep link, sound toggle, improved lighting; `Dockerfile`, `nginx.conf`, `.dockerignore`.
+- Dashboard: history replay links, `src/config.ts` (+ test), `Dockerfile`, `nginx.conf`, `.dockerignore`.
+- Deployment/docs: root `docker-compose.yml`, `.dockerignore`, `docs/guides/docker.md`, `docs/modules/replay.md`, `docs/api/openapi.yaml`, `docs/api/api_specification.md`, `docs/project-management/{development_checklist,demo_evidence,troubleshooting}.md`, `docs/plans/00-master-roadmap.md`, `README.md`, `TODO.md`.
+
+## Tests and Validation Commands with Actual Results
+```bash
+backend/.venv/Scripts/python.exe -m pytest backend/tests -q
+npm run typecheck && npm test && npm run build --prefix client
+npm run typecheck && npm test && npm run build --prefix dashboard
+```
+- Backend: `181 passed` (baseline 161).
+- Client: typecheck/build green, `76 passed` (baseline 30).
+- Dashboard: typecheck/build green, `44 passed` (baseline 40).
+- `docker compose config --quiet` validates the stack definition.
+
+## Live Evidence (demo validation script against a running server)
+```
+[PASS] Can the same seed reproduce the same scenario?
+[PASS] Can the same events reproduce the same score?   (50.0 recomputed = 50.0 stored, repeat complete identical)
+[PASS] Can a missed threat be detected in the AAR?     (missed_threat T02)
+[PASS] Can performance be compared across sessions?    (SES-5EBBAEC0 50.0 vs SES-8FCFF1C7 100.0)
+[PASS] Can adaptive difficulty explain why it changed? (difficulty 1, reason cites multi-threat gap)
+5/5 validation questions passed.
+```
+Full captured output: `docs/project-management/demo_evidence.md`.
+
+## Remaining Issues or Blockers
+None for Phase 7. Phase 8 (optional Unity spike) is deliberately not started; it is gated behind the Phase 7 DoD. A license file still does not exist.

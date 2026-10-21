@@ -108,14 +108,32 @@
 - [x] Instructor scenario builder with playable simulator link
 - [x] Simulator start-panel prefill from scenario query params
 
+## Replay, demo polish & deployment (Phase 7)
+
+- [x] Replay schemas and pure replay builder (`app/schemas/replay.py`, `app/services/replay.py`)
+- [x] `GET /sessions/{session_id}/replay` route
+- [x] OpenAPI contract + conformance test for replay
+- [x] Client replay timeline, player, scrubber panel and 3D replay view
+- [x] AAR "Watch replay" entry point + `#replay=` deep link
+- [x] Dashboard history "Watch" replay link
+- [x] WebAudio sound cues (offline, no binary assets) + HUD toggle
+- [x] Keyboard shortcuts (`d`, `1`–`5`, `m`, `t`, `r`, `h`, `f`, `Enter`)
+- [x] Improved lighting/sky (hemisphere light, grid, night stars)
+- [x] Recoverable error panels (client + dashboard)
+- [x] Guided demo mode (`?demo=1` scripted auto-pilot)
+- [x] `backend/scripts/validate_demo.py` + captured evidence
+- [x] Dockerfiles, nginx configs, `docker-compose.yml`, `.dockerignore`
+- [x] `docs/guides/docker.md` and troubleshooting pass
+- [x] `docs/modules/replay.md` and API specification section
+
 ## Polish
 
-- [ ] Better assets
-- [ ] Better lighting
-- [ ] Sound
-- [ ] UI polish
-- [ ] Error handling
-- [ ] Demo mode
+- [x] Better assets (procedural primitives only; no binary assets added)
+- [x] Better lighting
+- [x] Sound
+- [x] UI polish
+- [x] Error handling
+- [x] Demo mode
 
 ## Optional
 

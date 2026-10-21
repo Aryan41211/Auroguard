@@ -16,9 +16,9 @@ review objective scores and follow an explainable, personalised training loop.
 [![Three.js](https://img.shields.io/badge/Three.js-r169-000000?logo=three.js&logoColor=white)](https://threejs.org/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 
-![Tests](https://img.shields.io/badge/tests-161%20backend%20%C2%B7%2030%20client%20%C2%B7%2040%20dashboard-brightgreen)
+![Tests](https://img.shields.io/badge/tests-181%20backend%20%C2%B7%2076%20client%20%C2%B7%2044%20dashboard-brightgreen)
 ![Offline first](https://img.shields.io/badge/offline--first-localhost-blueviolet)
-![Status](https://img.shields.io/badge/status-Phase%206%20complete-success)
+![Status](https://img.shields.io/badge/status-Phase%207%20complete-success)
 
 </div>
 
@@ -72,6 +72,7 @@ review objective scores and follow an explainable, personalised training loop.
 | **Play** | A Three.js browser client renders the scene; the trainee clicks **Detect → Classify → Respond** per threat, can raise a **false alarm**, and finishes. |
 | **Score** | The backend replays the event log and computes a deterministic 0–100 score with timing and mistake analysis. |
 | **Review** | An After-Action Review surfaces summary, scores, timing, mistakes, strengths, weaknesses and a recommendation. |
+| **Replay** | Any session can be watched again with a server-derived timeline scrubber, from the AAR or a `#replay=SES-...` deep link. |
 | **Adapt** | Performance is aggregated per condition and a rule-based recommender proposes the next scenario with its reasoning. |
 | **Instruct** | A React dashboard offers history, trends, a weakness heatmap, per-trainee performance and an instructor scenario builder. |
 
@@ -97,9 +98,9 @@ exercise and its replay are always the same exercise.
 
 | Surface | Port | Purpose |
 |---|---|---|
-| Browser simulator client | `5173` | Play a scenario, detect/classify/respond, view the AAR |
-| Instructor dashboard | `5174` | History, trends, weakness heatmap, performance, scenario builder |
-| FastAPI backend | `8000` | Scenario, scoring, storage, AAR and adaptive logic (`/docs` for Swagger) |
+| Browser simulator client | `5173` | Play a scenario, detect/classify/respond, view the AAR and replay |
+| Instructor dashboard | `5174` | History, trends, weakness heatmap, performance, scenario builder, replay links |
+| FastAPI backend | `8000` | Scenario, scoring, storage, AAR, replay and adaptive logic (`/docs` for Swagger) |
 
 ## Architecture
 
@@ -108,8 +109,9 @@ exercise and its replay are always the same exercise.
 ┌───────────────────┐        ┌───────────────────────┐        ┌─────────────────┐
 │  Browser client   │───────▶│    FastAPI backend    │───────▶│     SQLite      │
 │  (Vite + Three.js)│◀───────│  authority: scenario, │◀───────│ scenarios       │
-│  play + AAR       │        │  scoring, AAR, adapt  │        │ sessions/events │
-└───────────────────┘        └───────▲───────────────┘        │ scores          │
+│  play · AAR ·     │        │  scoring, AAR, replay,│        │ sessions/events │
+│  replay           │        │  adaptive training    │        │ scores          │
+└───────────────────┘        └───────▲───────────────┘        │ perf profiles   │
 ┌───────────────────┐                │                        │ perf profiles   │
 │  React dashboard  │────────────────┘                        └─────────────────┘
 │  instructor views │   read-only over /api/v1 JSON
@@ -145,14 +147,16 @@ they never compute scores.
 Aeroguard/
 ├── backend/                 FastAPI app, services, db, tests, scripts/
 │   ├── app/
-│   │   ├── api/             scenarios · sessions · aar · training routers
+│   │   ├── api/             scenarios · sessions · aar · replay · training routers
 │   │   ├── schemas/         pydantic request/response models
-│   │   ├── services/        scenario_generator · scoring · aar · adaptive · demo_seed
+│   │   ├── services/        scenario_generator · scoring · aar · replay · adaptive · demo_seed
 │   │   └── db/              SQLAlchemy models + session
-│   ├── scripts/seed_demo.py deterministic demo-data CLI
+│   ├── scripts/             seed_demo.py · validate_demo.py
 │   └── tests/               pytest suite (unit · contract · integration)
 ├── client/                  Vite + TS + Three.js simulator (port 5173)
+│   └── src/replay/          timeline · player · scrubber · 3D replay view
 ├── dashboard/               React + Recharts instructor app (port 5174)
+├── docker-compose.yml       backend + simulator + dashboard (optional)
 ├── docs/                    engineering truth: background · modules · api · plans · guides
 └── report.md                phase verification reports
 ```
@@ -202,6 +206,21 @@ npm install
 npm run dev                        # http://localhost:5174  (proxies /api → :8000)
 ```
 
+### 5 · Everything with Docker *(optional)*
+
+```bash
+docker compose up --build
+```
+
+Starts the API on `:8000`, simulator on `:5173`, dashboard on `:5174`, with
+healthchecks and a persistent SQLite volume. See `docs/guides/docker.md`.
+
+### 6 · Guided demo
+
+Open <http://localhost:5173/?demo=1> for a scripted auto-pilot that plays the
+scenario and deliberately leaves one teachable mistake for the AAR. Press `r` in
+the client to open the replay, or use the dashboard's "Watch" link.
+
 ## API
 
 Base path `/api/v1`, JSON. The contract lives in `docs/api/openapi.yaml` and is
@@ -217,6 +236,7 @@ the human-readable companion.
 | `POST` | `/sessions/{id}/events` | Submit a trainee event |
 | `POST` | `/sessions/{id}/complete` | Complete and score the session |
 | `GET`  | `/sessions/{id}/aar` | After-Action Review for a completed session |
+| `GET`  | `/sessions/{id}/replay` | Deterministic event log + server-derived replay frames |
 | `GET`  | `/trainees/{id}/performance` | Historical per-condition aggregates |
 | `POST` | `/training/recommend` | Rule-based next-scenario recommendation + reason |
 
@@ -238,18 +258,20 @@ See `docs/modules/scoring_engine.md`.
 ## Testing
 
 ```bash
-# Backend — 161 tests
+# Backend — 181 tests
 cd backend && .venv/Scripts/python -m pytest tests -q
 
-# Simulator client — typecheck + 30 unit tests + build
+# Simulator client — typecheck + 76 unit tests + build
 cd client && npm run typecheck && npm test && npm run build
 
-# Dashboard — typecheck + 40 unit tests + build
+# Dashboard — typecheck + 44 unit tests + build
 cd dashboard && npm run typecheck && npm test && npm run build
 ```
 
 Golden tests enforce scenario determinism; contract tests keep the OpenAPI spec,
-the routers and the docs in sync.
+the routers and the docs in sync. `backend/scripts/validate_demo.py` runs the
+full demo sequence against a live API and asserts the five validation questions
+(see `docs/project-management/demo_evidence.md`).
 
 ## Documentation
 
@@ -258,9 +280,9 @@ Start at `docs/guides/start_here.md`, then explore:
 | Area | Where |
 |---|---|
 | Background | `docs/background/problem_and_scope.md`, `safety_scope.md` |
-| Modules | `docs/modules/` — architecture, scenario engine, scoring, event model, AAR & adaptive training, FastAPI backend, UI/UX |
+| Modules | `docs/modules/` — architecture, scenario engine, scoring, event model, replay, AAR & adaptive training, FastAPI backend, UI/UX |
 | API | `docs/api/api_specification.md`, `docs/api/openapi.yaml` |
-| Guides | `docs/guides/` — local setup, testing & validation, project structure |
+| Guides | `docs/guides/` — local setup, testing & validation, project structure, Docker deployment |
 | Plans | `docs/plans/00-master-roadmap.md` and per-phase plans |
 | Project management | `docs/project-management/` — requirements, decisions, checklist, git workflow, demo validation, troubleshooting |
 
@@ -274,14 +296,18 @@ categories only** — no targeting, engagement or real-drone logic. See
 
 ## Status
 
-**Phases 0–6 complete:** environment · scenario engine · scoring & sessions ·
+**Phases 0–7 complete:** environment · scenario engine · scoring & sessions ·
 browser client · AAR & adaptive training · content expansion · dashboard &
-instructor mode.
+instructor mode · **deterministic replay, demo polish and Docker deployment**.
 
-**Phase 7 next:** deterministic replay with a timeline scrubber, sound/UI polish,
-a full demo-validation run, and optional Docker. **Phase 8** (optional Unity
-spike) is gated behind Phase 7. Progress is tracked in
-`docs/project-management/development_checklist.md` and
+**Phase 7 delivered:** server-authoritative replay with a timeline scrubber and
+AAR/dashboard deep links, synthesized sound cues, improved lighting, keyboard
+shortcuts, recoverable error panels, a guided `?demo=1` auto-pilot, Docker
+Compose, and a full demo-validation run with captured evidence
+(`docs/project-management/demo_evidence.md`).
+
+**Phase 8** (optional Unity spike) remains gated and is not started. Progress
+is tracked in `docs/project-management/development_checklist.md` and
 `docs/plans/00-master-roadmap.md`.
 
 ---

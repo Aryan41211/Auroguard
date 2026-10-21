@@ -4,9 +4,11 @@
 
 **Goal:** Build the full Aeroguard prototype — scenario → simulate → detect/classify/respond → score → AAR → adaptive loop — with a browser client first, Unity later (user decision, 2026-10-09).
 
-**Architecture:** FastAPI + SQLite backend is the authority (scenario, scoring, AAR, adaptive); a Three.js/Vite browser client is the presentation layer; React dashboard for instructor/analytics. All communicate over `/api/v1` JSON per `docs/api/api_specification.md`.
+**Status (2026-10-21):** Phases 0–7 complete, including deterministic replay, demo polish and Docker deployment. Phase 8 (optional Unity spike) is gated and not started.
 
-**Tech Stack:** Python 3.12 / FastAPI / Pydantic / SQLAlchemy / pytest · TypeScript / Vite / Three.js · React + Recharts (dashboard) · SQLite · (later: Unity, Docker)
+**Architecture:** FastAPI + SQLite backend is the authority (scenario, scoring, AAR, replay, adaptive); a Three.js/Vite browser client is the presentation layer; React dashboard for instructor/analytics. All communicate over `/api/v1` JSON per `docs/api/api_specification.md`.
+
+**Tech Stack:** Python 3.12 / FastAPI / Pydantic / SQLAlchemy / pytest · TypeScript / Vite / Three.js · React + Recharts (dashboard) · SQLite · Docker Compose (optional) · (later: Unity)
 
 **Specs:** `docs/guides/first_vertical_slice.md`, `docs/project-management/build_order.md`, `docs/modules/scenario_engine.md`, `docs/modules/scoring_engine.md`, `docs/modules/event_and_data_model.md`, `docs/api/api_specification.md`, `docs/modules/aar_and_adaptive_training.md`, `docs/modules/ai_implementation.md`, `docs/guides/testing_validation.md`, `docs/project-management/git_workflow.md`
 
@@ -83,10 +85,12 @@ docs/api/openapi.yaml   (frozen v1 contract)
 **Tasks:** React+Vite+TS + Recharts: history table, score trends, weakness heatmap · instructor scenario builder · trainee performance view · `scripts/seed_demo.py` (~50 synthetic sessions).
 **DoD:** dashboard renders trends from seeded data; instructor-launched scenario is playable.
 
-## Phase 7 — Replay, demo polish, deployment (2 days)
+## Phase 7 — Replay, demo polish, deployment (2 days) ✅ complete
 
 **Tasks:** deterministic replay (seed + events → timeline scrubber) · sound/UI polish · full `docs/project-management/demo_validation.md` run with evidence collection · optional docker-compose · troubleshooting pass.
 **DoD:** demo script passes twice; replay reproduces sessions identically.
+
+**Delivered:** `GET /sessions/{id}/replay` with server-derived frames; client replay panel/player/3D view, AAR button and `#replay=` deep link; dashboard replay links; WebAudio cues; keyboard shortcuts; lighting/sky polish; recoverable error panels; `?demo=1` auto-pilot; Dockerfiles + `docker-compose.yml`; `backend/scripts/validate_demo.py` (5/5 questions passing, evidence in `docs/project-management/demo_evidence.md`); `docs/modules/replay.md`, `docs/guides/docker.md` and a troubleshooting pass.
 
 ## Phase 8 (optional) — Unity client spike
 
